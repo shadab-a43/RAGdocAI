@@ -1,0 +1,15 @@
+
+# PDF text extraction
+pymupdf
+
+# Vector database
+chromadb
+
+# Text embeddings
+sentence-transformers
+
+# Local LLM connection
+ollama
+
+# Web interface
+streamlit
