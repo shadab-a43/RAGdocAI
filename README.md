@@ -14,7 +14,9 @@ The main goal of this project is to understand and implement the complete RAG pi
 
 - [x] Load and read PDF documents.
 - [x] Extract text from PDF files.
-- [x] Split documents into smaller chunks with overlap.
+- [x] Split documents into smaller chunks with sentence-aware boundaries.
+- [x] Implement controlled text overlap between chunks.
+- [x] Prevent broken words during chunking.
 - [x] Convert text chunks into numerical embeddings.
 - [x] Store embeddings in ChromaDB.
 - [x] Retrieve relevant information using semantic similarity search.
@@ -24,6 +26,11 @@ The main goal of this project is to understand and implement the complete RAG pi
 - [x] Ask multiple questions without restarting the program.
 - [x] Handle empty user input.
 - [x] Avoid generating answers when the document does not contain sufficient information.
+- [x] Organize document processing into reusable functions.
+- [x] Generate embeddings through a reusable function.
+- [x] Store document chunks and embeddings through a reusable function.
+- [x] Retrieve relevant chunks through a reusable function.
+- [x] Generate context-based answers through a reusable function.
 
 ## Technology Stack
 
@@ -43,12 +50,14 @@ The main goal of this project is to understand and implement the complete RAG pi
 The RAG pipeline currently implemented:
 
 1. **Document Loading:** Read PDF files and extract text using PyMuPDF.
-2. **Text Chunking:** Divide extracted text into smaller pieces with overlap.
+2. **Text Chunking:** Divide extracted text into smaller pieces using sentence-aware chunking with controlled overlap.
 3. **Embeddings:** Convert text chunks into numerical vectors using Nomic Embed Text.
 4. **Vector Storage:** Store embeddings and document chunks in ChromaDB.
 5. **Retrieval:** Find relevant chunks based on the user's question using semantic similarity search.
 6. **Generation:** Pass retrieved context to a local LLM using Ollama.
 7. **Response:** Generate an answer based on the retrieved document information.
+
+The individual pipeline functions have been implemented and tested. Connecting the entire workflow through a single function is still in progress.
 
 ## Project Structure
 
@@ -72,7 +81,9 @@ RAGdocAI/
 │   ├── store_embeddings.py
 │   ├── retrieve_data.py
 │   ├── retrieve_chunks.py
-│   └── rag_answer.py
+│   ├── rag_answer.py
+│   ├── rag_pipeline.py
+│   └── test_pipeline.py
 │
 ├── .gitignore
 ├── .gitattributes
@@ -80,7 +91,7 @@ RAGdocAI/
 └── README.md
 ```
 
-Note: `data/chroma_db/` contains the locally stored ChromaDB database and is not intended to be committed to GitHub.
+Note: `data/chroma_db/` contains the locally stored ChromaDB database and is not intended to be committed to GitHub. The private `PROJECT_CONTEXT.md` file is also excluded from GitHub.
 
 ## Installation and Setup
 
@@ -122,6 +133,18 @@ ollama pull nomic-embed-text
 
 Note: Model downloads are required only if the models are not already available locally.
 
+### 6. Add a PDF Document
+
+Place your PDF inside the `documents/` directory.
+
+### 7. Run the Basic RAG Pipeline Test
+
+From the project root:
+
+```bash
+python src/test_pipeline.py
+```
+
 ## Project Status
 
 **Currently in Development**
@@ -134,12 +157,16 @@ Note: Model downloads are required only if the models are not already available 
 - [x] Ollama installation and local model verification.
 - [x] PDF text extraction using PyMuPDF.
 - [x] Basic text chunking with overlap.
+- [x] Sentence-aware text chunking.
+- [x] Controlled overlap between chunks.
+- [x] Prevent broken words during chunking.
 - [x] PDF loading and chunking pipeline tested.
 - [x] Generate text embeddings using Ollama.
 - [x] Verify embedding dimensions.
 - [x] Integrate ChromaDB.
 - [x] Store document chunks and embeddings in ChromaDB.
 - [x] Verify persistent vector storage.
+- [x] Synchronize updated chunks with ChromaDB.
 - [x] Implement semantic document retrieval.
 - [x] Generate question embeddings.
 - [x] Retrieve top relevant chunks using similarity search.
@@ -152,15 +179,20 @@ Note: Model downloads are required only if the models are not already available 
 - [x] Test Python-related questions.
 - [x] Test RAG-related questions.
 - [x] Test questions whose answers are not available in the document.
+- [x] Implement reusable PDF processing function.
+- [x] Implement reusable embedding generation function.
+- [x] Implement reusable ChromaDB storage function.
+- [x] Implement reusable retrieval function.
+- [x] Implement reusable answer-generation function.
+- [x] Test the individual reusable pipeline functions.
 
 ### In Progress
 
-- [ ] Improve text chunking to avoid breaking words and sentences.
-- [ ] Organize the complete RAG pipeline into reusable functions.
-- [ ] Build the complete and refined basic RAG pipeline.
+- [ ] Connect the complete RAG workflow through a single `ask_question()` function.
+- [ ] Support multiple PDF documents.
 - [ ] Add document metadata and source information.
-- [ ] Support multiple documents.
-- [ ] Perform final basic RAG pipeline testing.
+- [ ] Add page-level source citations.
+- [ ] Complete final basic RAG pipeline testing.
 
 ### Upcoming
 
