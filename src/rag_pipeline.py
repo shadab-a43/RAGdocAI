@@ -238,26 +238,24 @@ def ask_question(
     collection_name=COLLECTION_NAME,
     db_path=DB_PATH
 ):
-    """Retrieve relevant chunks and generate an answer."""
+    """Retrieve relevant chunks using hybrid search and generate an answer."""
 
-    # Step 1: Retrieve relevant chunks
-    retrieved_chunks = retrieve_chunks(
+    from hybrid_search import hybrid_search
+
+    retrieved_chunks = hybrid_search(
         question,
         n_results=n_results,
         collection_name=collection_name,
         db_path=db_path
     )
 
-    # Step 2: Handle empty retrieval
     if not retrieved_chunks:
         return "No documents are available for answering this question."
 
-    # Step 3: Prepare context
     context = "\n\n".join(
         chunk["text"] for chunk in retrieved_chunks
     )
 
-    # Step 4: Generate answer
     answer = generate_answer(question, context)
 
     return answer
