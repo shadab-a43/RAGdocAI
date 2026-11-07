@@ -68,7 +68,10 @@ print("Total chunks stored:", total_stored)
 # Step 10: Test question answering
 question = "What is RAG?"
 
-answer = ask_question(question)
+answer = ask_question(
+    question,
+    n_results=5
+)
 
 print("\nAsk Question Test")
 print("Question:", question)
