@@ -20,9 +20,13 @@ The main goal of this project is to understand and implement the complete RAG pi
 - [x] Prevent broken words during chunking.
 - [x] Preserve document source and page metadata in chunks.
 - [x] Generate unique document-specific chunk IDs.
-- [x] Convert text chunks into numerical embeddings.
+- [x] Generate numerical embeddings using Ollama.
 - [x] Store embeddings and metadata in ChromaDB.
 - [x] Retrieve relevant information using semantic similarity search.
+- [x] Implement BM25 keyword search.
+- [x] Combine semantic and keyword search using Reciprocal Rank Fusion (RRF).
+- [x] Implement Hybrid Search.
+- [x] Integrate Hybrid Search into the main `ask_question()` function.
 - [x] Return retrieved text with source and page information.
 - [x] Generate answers using a locally running LLM.
 - [x] Answer questions using retrieved document context.
@@ -32,10 +36,7 @@ The main goal of this project is to understand and implement the complete RAG pi
 - [x] Handle empty user input.
 - [x] Avoid generating answers when no documents are available.
 - [x] Organize document processing into reusable functions.
-- [x] Generate embeddings through a reusable function.
-- [x] Store document chunks and embeddings through a reusable function.
-- [x] Retrieve relevant chunks through a reusable function.
-- [x] Generate context-based answers through a reusable function.
+- [x] Implement reusable embedding, storage, retrieval and answer-generation functions.
 - [x] Connect the complete workflow through a single `ask_question()` function.
 
 ## Technology Stack
@@ -48,7 +49,8 @@ The main goal of this project is to understand and implement the complete RAG pi
 | Nomic Embed Text | Generate text embeddings |
 | ChromaDB | Local vector database |
 | PyMuPDF | Extract text from PDF documents |
-| Streamlit | Build the planned user interface |
+| rank-bm25 | Keyword-based document retrieval |
+| Streamlit | Planned user interface |
 | Sentence Transformers | Embedding and retrieval experimentation |
 
 ## Project Architecture
@@ -60,9 +62,11 @@ The RAG pipeline currently implemented:
 3. **Metadata Preservation:** Attach document source, page number and unique document ID to every chunk.
 4. **Embeddings:** Convert text chunks into numerical vectors using Nomic Embed Text.
 5. **Vector Storage:** Store embeddings, document chunks and metadata in ChromaDB.
-6. **Retrieval:** Find relevant chunks based on the user's question using semantic similarity search.
-7. **Generation:** Pass retrieved context to a local LLM using Ollama.
-8. **Response:** Generate an answer based on the retrieved document information.
+6. **Semantic Retrieval:** Find relevant chunks using embedding similarity.
+7. **Keyword Retrieval:** Find relevant chunks using BM25 keyword search.
+8. **Hybrid Retrieval:** Combine semantic and keyword search rankings using Reciprocal Rank Fusion (RRF).
+9. **Generation:** Pass retrieved context to a local LLM using Ollama.
+10. **Response:** Generate an answer based on the retrieved document information.
 
 The complete workflow is connected through reusable functions and tested with multiple PDF documents.
 
@@ -92,6 +96,10 @@ RAGdocAI/
 │   ├── retrieve_chunks.py
 │   ├── rag_answer.py
 │   ├── rag_pipeline.py
+│   ├── keyword_search.py
+│   ├── hybrid_search.py
+│   ├── test_keyword_search.py
+│   ├── test_hybrid_search.py
 │   └── test_pipeline.py
 │
 ├── .gitignore
@@ -129,6 +137,12 @@ Windows PowerShell:
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+Make sure `rank-bm25` is included in `requirements.txt`. If it is not, install it using:
+
+```bash
+python -m pip install rank-bm25
 ```
 
 ### 5. Install and Run Ollama
@@ -192,18 +206,13 @@ python src/test_pipeline.py
 - [x] Generate unique document-specific chunk IDs.
 - [x] Implement semantic document retrieval.
 - [x] Generate question embeddings.
-- [x] Retrieve top relevant chunks using similarity search.
+- [x] Retrieve relevant chunks using similarity search.
 - [x] Retrieve source and page information with relevant chunks.
 - [x] Connect the local LLM with retrieved context.
 - [x] Generate context-based answers using Llama 3.2.
-- [x] Implement interactive question input.
-- [x] Support multiple questions in one program run.
 - [x] Handle insufficient information using grounded answering.
 - [x] Handle empty user input.
 - [x] Handle empty document collections during retrieval.
-- [x] Test Python-related questions.
-- [x] Test RAG-related questions.
-- [x] Test questions whose answers are not available in the document.
 - [x] Implement reusable PDF processing function.
 - [x] Implement reusable embedding generation function.
 - [x] Implement reusable ChromaDB storage function.
@@ -217,6 +226,12 @@ python src/test_pipeline.py
 - [x] Test source and page metadata retrieval.
 - [x] Test empty retrieval handling.
 - [x] Test the complete RAG pipeline.
+- [x] Implement BM25 keyword search.
+- [x] Implement Hybrid Search using semantic and keyword retrieval.
+- [x] Combine search rankings using Reciprocal Rank Fusion.
+- [x] Integrate Hybrid Search into `ask_question()`.
+- [x] Test Hybrid Search with multiple PDF documents.
+- [x] Verify context-based answers using Hybrid Search.
 
 ### In Progress
 
@@ -225,13 +240,15 @@ python src/test_pipeline.py
 
 ### Upcoming
 
+- [ ] Implement reranking.
+- [ ] Implement query rewriting.
+- [ ] Add similarity threshold filtering.
+- [ ] Evaluate retrieval quality using Precision@K and Recall@K.
 - [ ] Develop a Streamlit user interface.
 - [ ] Support multiple document formats.
 - [ ] Allow document uploads through the interface.
 - [ ] Display source-based answers with document references.
 - [ ] Add document management.
-- [ ] Implement advanced retrieval techniques.
-- [ ] Evaluate retrieval quality and answer accuracy.
 - [ ] Add chat history.
 - [ ] Improve application performance and user experience.
 
@@ -255,7 +272,6 @@ No paid API keys are required for the core functionality. Internet access may be
 
 - Support for PDF, TXT and DOCX documents.
 - Improved chunking strategies.
-- Hybrid search.
 - Reranking.
 - Query rewriting.
 - Similarity threshold filtering.
