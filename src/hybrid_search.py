@@ -1,5 +1,7 @@
 import chromadb
 
+from reranker import rerank_chunks
+
 from rag_pipeline import (
     retrieve_chunks,
     COLLECTION_NAME,
@@ -83,20 +85,37 @@ def hybrid_search(
 
             result_data[key] = chunk
 
-    # Step 5: Sort by combined score
+       # Step 5: Sort candidates using RRF
     ranked_keys = sorted(
         fused_scores,
         key=lambda key: fused_scores[key],
         reverse=True
     )
 
-    final_results = []
+    candidate_chunks = []
 
-    for key in ranked_keys[:n_results]:
+    for key in ranked_keys[:fetch_k]:
 
         result = result_data[key].copy()
         result["rrf_score"] = fused_scores[key]
 
-        final_results.append(result)
+        candidate_chunks.append(result)
+
+    # Step 6: Rerank candidates using FlashRank
+    reranked_results = rerank_chunks(
+        question,
+        candidate_chunks,
+        top_n=n_results
+    )
+
+    # Step 7: Prepare final results
+    final_results = []
+
+    for result in reranked_results:
+
+        chunk = result["meta"].copy()
+        chunk["rerank_score"] = result["score"]
+
+        final_results.append(chunk)
 
     return final_results
