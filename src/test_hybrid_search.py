@@ -14,4 +14,5 @@ for result in results:
     print("\nSource:", result["source"])
     print("Page:", result["page"])
     print("RRF Score:", result["rrf_score"])
+    print("Rerank Score:", result["rerank_score"])
     print("Text:", result["text"])
