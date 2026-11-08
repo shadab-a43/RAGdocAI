@@ -258,4 +258,16 @@ def ask_question(
 
     answer = generate_answer(question, context)
 
-    return answer
+    sources = []
+
+    for chunk in retrieved_chunks:
+        source_info = f"{chunk['source']} (Page {chunk['page']})"
+
+        if source_info not in sources:
+            sources.append(source_info)
+
+    source_text = "\n".join(
+        f"- {source}" for source in sources
+    )
+
+    return f"{answer}\n\nSources:\n{source_text}"
