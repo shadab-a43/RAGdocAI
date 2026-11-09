@@ -1,4 +1,3 @@
-
 # PDF text extraction
 pymupdf
 
@@ -13,3 +12,12 @@ ollama
 
 # Web interface
 streamlit
+
+# Keyword search
+rank-bm25
+
+# Reranking
+flashrank
+
+# Testing
+pytest
