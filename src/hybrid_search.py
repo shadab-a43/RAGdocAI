@@ -1,6 +1,8 @@
+
 import chromadb
 
 from reranker import rerank_chunks
+from query_rewriter import rewrite_query
 
 from rag_pipeline import (
     retrieve_chunks,
@@ -15,10 +17,11 @@ def hybrid_search(
     question,
     n_results=2,
     fetch_k=5,
+    min_score=0.1,
     collection_name=COLLECTION_NAME,
     db_path=DB_PATH
 ):
-    """Combine semantic and keyword search using RRF."""
+    """Combine query rewriting, hybrid search and reranking."""
 
     # Step 1: Get all stored document chunks
     client = chromadb.PersistentClient(path=db_path)
@@ -46,22 +49,27 @@ def hybrid_search(
     if not chunks:
         return []
 
-    # Step 2: Semantic search
+    # Step 2: Rewrite original question
+    rewritten_question = rewrite_query(question)
+
+    print("Rewritten Query:", rewritten_question)
+
+    # Step 3: Semantic search
     semantic_results = retrieve_chunks(
-        question,
+        rewritten_question,
         n_results=fetch_k,
         collection_name=collection_name,
         db_path=db_path
     )
 
-    # Step 3: Keyword search
+    # Step 4: Keyword search
     keyword_results = keyword_search(
-        question,
+        rewritten_question,
         chunks,
         n_results=fetch_k
     )
 
-    # Step 4: Combine rankings using RRF
+    # Step 5: Combine rankings using RRF
     fused_scores = {}
     result_data = {}
 
@@ -85,7 +93,7 @@ def hybrid_search(
 
             result_data[key] = chunk
 
-       # Step 5: Sort candidates using RRF
+    # Step 6: Sort candidates using RRF
     ranked_keys = sorted(
         fused_scores,
         key=lambda key: fused_scores[key],
@@ -101,17 +109,20 @@ def hybrid_search(
 
         candidate_chunks.append(result)
 
-    # Step 6: Rerank candidates using FlashRank
+    # Step 7: Rerank candidates using FlashRank
     reranked_results = rerank_chunks(
         question,
         candidate_chunks,
         top_n=n_results
     )
 
-    # Step 7: Prepare final results
+    # Step 8: Filter results using relevance threshold
     final_results = []
 
     for result in reranked_results:
+
+        if result["score"] < min_score:
+            continue
 
         chunk = result["meta"].copy()
         chunk["rerank_score"] = result["score"]
