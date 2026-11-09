@@ -6,7 +6,7 @@ A beginner-friendly, local AI-powered document question-answering system built u
 
 RAGdocAI is a local document question-answering system that processes PDF documents and allows users to ask questions about their content.
 
-Instead of relying only on the AI model's general knowledge, RAGdocAI retrieves relevant information from documents and uses that information to generate context-based answers.
+Instead of relying only on an AI model's general knowledge, RAGdocAI retrieves relevant information from documents and uses that information to generate context-based answers.
 
 The main goal of this project is to understand and implement the complete RAG pipeline from scratch using Python and local AI models, without depending on paid APIs.
 
@@ -15,10 +15,9 @@ The main goal of this project is to understand and implement the complete RAG pi
 - [x] Load and read PDF documents.
 - [x] Support multiple PDF documents.
 - [x] Extract text from PDF files page by page.
-- [x] Split documents into smaller chunks with sentence-aware boundaries.
-- [x] Implement controlled text overlap between chunks.
+- [x] Sentence-aware text chunking with controlled overlap.
 - [x] Prevent broken words during chunking.
-- [x] Preserve document source and page metadata in chunks.
+- [x] Preserve document source and page metadata.
 - [x] Generate unique document-specific chunk IDs.
 - [x] Generate numerical embeddings using Ollama.
 - [x] Store embeddings and metadata in ChromaDB.
@@ -26,6 +25,9 @@ The main goal of this project is to understand and implement the complete RAG pi
 - [x] Implement BM25 keyword search.
 - [x] Combine semantic and keyword search using Reciprocal Rank Fusion (RRF).
 - [x] Implement Hybrid Search.
+- [x] Implement query rewriting using a local LLM.
+- [x] Implement FlashRank-based reranking.
+- [x] Implement similarity threshold filtering.
 - [x] Integrate Hybrid Search into the main `ask_question()` function.
 - [x] Return retrieved text with source and page information.
 - [x] Generate answers using a locally running LLM.
@@ -38,6 +40,9 @@ The main goal of this project is to understand and implement the complete RAG pi
 - [x] Organize document processing into reusable functions.
 - [x] Implement reusable embedding, storage, retrieval and answer-generation functions.
 - [x] Connect the complete workflow through a single `ask_question()` function.
+- [x] Implement retrieval evaluation using Precision@K and Recall@K.
+- [x] Organize automated tests using pytest.
+- [x] Verify the complete pipeline with 27 passing test cases.
 
 ## Technology Stack
 
@@ -45,13 +50,14 @@ The main goal of this project is to understand and implement the complete RAG pi
 |---|---|
 | Python | Main programming language |
 | Ollama | Run local AI models |
-| Llama 3.2 (3B) | Local language model for answer generation |
+| Llama 3.2 (3B) | Local language model for answer generation and query rewriting |
 | Nomic Embed Text | Generate text embeddings |
 | ChromaDB | Local vector database |
 | PyMuPDF | Extract text from PDF documents |
 | rank-bm25 | Keyword-based document retrieval |
+| FlashRank | Rerank retrieved document chunks |
+| pytest | Automated testing |
 | Streamlit | Planned user interface |
-| Sentence Transformers | Embedding and retrieval experimentation |
 
 ## Project Architecture
 
@@ -64,9 +70,12 @@ The RAG pipeline currently implemented:
 5. **Vector Storage:** Store embeddings, document chunks and metadata in ChromaDB.
 6. **Semantic Retrieval:** Find relevant chunks using embedding similarity.
 7. **Keyword Retrieval:** Find relevant chunks using BM25 keyword search.
-8. **Hybrid Retrieval:** Combine semantic and keyword search rankings using Reciprocal Rank Fusion (RRF).
-9. **Generation:** Pass retrieved context to a local LLM using Ollama.
-10. **Response:** Generate an answer based on the retrieved document information.
+8. **Query Rewriting:** Expand or reformulate user questions to improve retrieval.
+9. **Hybrid Retrieval:** Combine semantic and keyword search rankings using Reciprocal Rank Fusion (RRF).
+10. **Reranking:** Reorder retrieved chunks using FlashRank based on their relevance to the question.
+11. **Similarity Filtering:** Filter low-relevance results using a configurable score threshold.
+12. **Generation:** Pass retrieved context to a local LLM using Ollama.
+13. **Response:** Generate context-based answers with source and page references.
 
 The complete workflow is connected through reusable functions and tested with multiple PDF documents.
 
@@ -85,12 +94,8 @@ RAGdocAI/
 │
 ├── src/
 │   ├── document_loader.py
-│   ├── test_loader.py
 │   ├── text_splitter.py
-│   ├── test_splitter.py
-│   ├── test_embeddings.py
 │   ├── embed_chunks.py
-│   ├── test_chromadb.py
 │   ├── store_embeddings.py
 │   ├── retrieve_data.py
 │   ├── retrieve_chunks.py
@@ -98,9 +103,22 @@ RAGdocAI/
 │   ├── rag_pipeline.py
 │   ├── keyword_search.py
 │   ├── hybrid_search.py
-│   ├── test_keyword_search.py
+│   ├── query_rewriter.py
+│   ├── reranker.py
+│   └── evaluation.py
+│
+├── tests/
+│   ├── conftest.py
+│   ├── test_chromadb.py
+│   ├── test_embeddings.py
+│   ├── test_evaluation.py
 │   ├── test_hybrid_search.py
-│   └── test_pipeline.py
+│   ├── test_keyword_search.py
+│   ├── test_loader.py
+│   ├── test_pipeline.py
+│   ├── test_query_rewriter.py
+│   ├── test_reranker.py
+│   └── test_splitter.py
 │
 ├── .gitignore
 ├── .gitattributes
@@ -108,7 +126,10 @@ RAGdocAI/
 └── README.md
 ```
 
-Note: `data/chroma_db/` contains the locally stored ChromaDB database and is not intended to be committed to GitHub. The private `PROJECT_CONTEXT.md` file is also excluded from GitHub.
+**Note:**
+- `data/chroma_db/` contains the locally stored ChromaDB database and is not intended to be committed to GitHub.
+- The private `PROJECT_CONTEXT.md` file is excluded from GitHub.
+- The `.venv/` directory and pytest cache are local development files.
 
 ## Installation and Setup
 
@@ -139,12 +160,6 @@ Windows PowerShell:
 python -m pip install -r requirements.txt
 ```
 
-Make sure `rank-bm25` is included in `requirements.txt`. If it is not, install it using:
-
-```bash
-python -m pip install rank-bm25
-```
-
 ### 5. Install and Run Ollama
 
 Install Ollama and download the required local models:
@@ -154,7 +169,7 @@ ollama pull llama3.2:3b
 ollama pull nomic-embed-text
 ```
 
-Note: Model downloads are required only if the models are not already available locally.
+Model downloads are required only if the models are not already available locally.
 
 ### 6. Add PDF Documents
 
@@ -170,13 +185,69 @@ From the project root:
 python src/store_embeddings.py
 ```
 
-This processes all PDF files inside the `documents/` directory and stores their embeddings and metadata in ChromaDB.
+This processes PDF files inside the `documents/` directory and stores their embeddings and metadata in ChromaDB.
 
-### 8. Run the RAG Pipeline Test
+### 8. Ask Questions Using the RAG Pipeline
+
+The main pipeline is available through the reusable `ask_question()` function in `src/rag_pipeline.py`.
+
+The module can be imported into another Python script and used to ask questions:
+
+```python
+import sys
+
+sys.path.insert(0, "src")
+
+from rag_pipeline import ask_question
+
+answer = ask_question(
+    "What is Python?",
+    n_results=2
+)
+
+print(answer)
+```
+
+This retrieves relevant document chunks using the implemented retrieval pipeline and generates an answer using the local LLM.
+
+**Note:** `rag_pipeline.py` currently provides reusable functions; it does not yet have a standalone interactive command-line interface.
+
+### 9. Run Automated Tests
+
+Run all tests from the project root:
 
 ```bash
-python src/test_pipeline.py
+python -m pytest tests/ -v
 ```
+
+## Testing Results
+
+The project currently contains 10 pytest test files covering the main components of the RAG pipeline.
+
+**Latest test results:**
+
+- Total test files: 10
+- Total test cases: 27
+- Passed: 27
+- Failed: 0
+- Execution time: 8.60 seconds
+
+All 27 tests passed successfully in the latest complete test run.
+
+Test coverage includes:
+
+- PDF loading and page extraction.
+- Text chunking.
+- Embedding generation.
+- ChromaDB connection and collection handling.
+- BM25 keyword search.
+- FlashRank reranking.
+- Query rewriting.
+- Hybrid Search.
+- Precision@K and Recall@K evaluation.
+- Complete RAG pipeline and empty collection handling.
+
+**Note:** Some integration tests require Ollama and the locally available AI models. ChromaDB currently produces a dependency deprecation warning during testing; it does not cause test failures.
 
 ## Project Status
 
@@ -190,60 +261,44 @@ python src/test_pipeline.py
 - [x] Ollama installation and local model verification.
 - [x] PDF text extraction using PyMuPDF.
 - [x] Page-wise PDF text extraction.
-- [x] Basic text chunking with overlap.
 - [x] Sentence-aware text chunking.
 - [x] Controlled overlap between chunks.
 - [x] Prevent broken words during chunking.
 - [x] Preserve page metadata in text chunks.
-- [x] PDF loading and chunking pipeline tested.
 - [x] Generate text embeddings using Ollama.
 - [x] Verify embedding dimensions.
 - [x] Integrate ChromaDB.
 - [x] Store document chunks and embeddings in ChromaDB.
 - [x] Store source, page and document ID metadata.
-- [x] Verify persistent vector storage.
 - [x] Synchronize updated chunks with ChromaDB.
 - [x] Generate unique document-specific chunk IDs.
 - [x] Implement semantic document retrieval.
-- [x] Generate question embeddings.
-- [x] Retrieve relevant chunks using similarity search.
-- [x] Retrieve source and page information with relevant chunks.
 - [x] Connect the local LLM with retrieved context.
 - [x] Generate context-based answers using Llama 3.2.
 - [x] Handle insufficient information using grounded answering.
 - [x] Handle empty user input.
 - [x] Handle empty document collections during retrieval.
-- [x] Implement reusable PDF processing function.
-- [x] Implement reusable embedding generation function.
-- [x] Implement reusable ChromaDB storage function.
-- [x] Implement reusable retrieval function.
-- [x] Implement reusable answer-generation function.
+- [x] Implement reusable PDF processing, embedding, storage and retrieval functions.
 - [x] Connect the complete workflow through `ask_question()`.
 - [x] Support multiple PDF documents.
-- [x] Test ingestion of multiple PDFs.
 - [x] Verify repeated ingestion without duplicate records.
-- [x] Verify existing documents remain stored when another PDF is ingested.
-- [x] Test source and page metadata retrieval.
-- [x] Test empty retrieval handling.
-- [x] Test the complete RAG pipeline.
 - [x] Implement BM25 keyword search.
 - [x] Implement Hybrid Search using semantic and keyword retrieval.
 - [x] Combine search rankings using Reciprocal Rank Fusion.
-- [x] Integrate Hybrid Search into `ask_question()`.
-- [x] Test Hybrid Search with multiple PDF documents.
-- [x] Verify context-based answers using Hybrid Search.
+- [x] Implement query rewriting.
+- [x] Implement FlashRank reranking.
+- [x] Implement similarity threshold filtering.
+- [x] Implement retrieval evaluation using Precision@K and Recall@K.
+- [x] Add automated pytest tests.
+- [x] Verify all 27 tests successfully.
 
 ### In Progress
 
-- [ ] Improve answer responses with explicit source references and page citations.
 - [ ] Organize and clean up the project for the next development stage.
+- [ ] Review retrieval quality and improve evaluation coverage.
 
 ### Upcoming
 
-- [ ] Implement reranking.
-- [ ] Implement query rewriting.
-- [ ] Add similarity threshold filtering.
-- [ ] Evaluate retrieval quality using Precision@K and Recall@K.
 - [ ] Develop a Streamlit user interface.
 - [ ] Support multiple document formats.
 - [ ] Allow document uploads through the interface.
@@ -272,11 +327,10 @@ No paid API keys are required for the core functionality. Internet access may be
 
 - Support for PDF, TXT and DOCX documents.
 - Improved chunking strategies.
-- Reranking.
-- Query rewriting.
-- Similarity threshold filtering.
-- Retrieval evaluation using Precision@K and Recall@K.
-- Improved user interface and user experience.
+- Further improvements to retrieval quality.
+- More comprehensive retrieval evaluation.
+- Streamlit-based user interface.
+- Document management and chat history.
 
 ## Learning Approach
 
