@@ -10,8 +10,10 @@ sentence-transformers
 # Local LLM connection
 ollama
 
-# Web interface
-streamlit
+# Python web backend
+fastapi
+uvicorn
+python-multipart
 
 # Keyword search
 rank-bm25
