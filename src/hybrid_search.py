@@ -1,17 +1,16 @@
 
 import chromadb
 
-from reranker import rerank_chunks
-from query_rewriter import rewrite_query
+from src.reranker import rerank_chunks
+from src.query_rewriter import rewrite_query
 
-from rag_pipeline import (
+from src.rag_pipeline import (
     retrieve_chunks,
     COLLECTION_NAME,
     DB_PATH
 )
 
-from keyword_search import keyword_search
-
+from src.keyword_search import keyword_search
 
 def hybrid_search(
     question,
