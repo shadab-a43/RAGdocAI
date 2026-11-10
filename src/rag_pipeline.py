@@ -4,8 +4,8 @@ import chromadb
 import hashlib
 
 from pathlib import Path
-from document_loader import load_pdf_pages
-from text_splitter import split_pages
+from src.document_loader import load_pdf_pages
+from src.text_splitter import split_pages
 
 
 COLLECTION_NAME = "ragdocai_collection_v2"
@@ -240,7 +240,7 @@ def ask_question(
 ):
     """Retrieve relevant chunks using hybrid search and generate an answer."""
 
-    from hybrid_search import hybrid_search
+    from src.hybrid_search import hybrid_search
 
     retrieved_chunks = hybrid_search(
         question,
