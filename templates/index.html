@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RAGdocAI | Document Intelligence</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">R</div>
+
+                <div>
+                    <h2>RAGdocAI</h2>
+                    <span>Document Intelligence</span>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+
+                <p class="sidebar-label">WORKSPACE</p>
+
+                <div class="sidebar-item active">
+                    <span>✦</span>
+                    <span>Document Chat</span>
+                </div>
+
+                <p class="sidebar-label documents-label">YOUR DOCUMENTS</p>
+
+                <div class="upload-card">
+
+                    <div class="upload-icon">📄</div>
+
+                    <h3>Bring your documents</h3>
+
+                    <p>Upload your PDFs and let AI help you explore them.</p>
+
+                    <label for="pdf-upload" class="upload-button">
+                        + Add PDF files
+                    </label>
+
+                    <input
+                        type="file"
+                        id="pdf-upload"
+                        accept=".pdf"
+                        multiple
+                        class="file-input"
+                    >
+
+                    <span class="upload-hint">PDF format supported</span>
+
+                </div>
+
+            </div>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                <span>Local AI is ready</span>
+            </div>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Topbar -->
+            <header class="topbar">
+
+                <div>
+                    <h1>Document Assistant</h1>
+                    <p>Your knowledge, one question away.</p>
+                </div>
+
+                <div class="topbar-actions">
+
+                    <div class="system-status">
+                        <span class="status-dot"></span>
+                        Local AI
+                    </div>
+
+                    <button
+                        id="theme-toggle"
+                        class="theme-toggle"
+                        type="button"
+                        aria-label="Switch color theme"
+                        title="Switch theme"
+                    >
+                        ☀
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- Chat -->
+            <section class="chat-section">
+
+                <div id="chat-box">
+
+                    <div class="welcome-screen">
+
+                        <div class="welcome-icon">✦</div>
+
+                        <span class="welcome-label">
+                            YOUR PERSONAL DOCUMENT ASSISTANT
+                        </span>
+
+                        <h2>
+                            Hello there!<br>
+                            What would you like to discover?
+                        </h2>
+
+                        <p>
+                            Upload your documents and ask anything.
+                            I'll help you find answers from your PDFs.
+                        </p>
+
+                        <div class="suggestion-list">
+
+                            <div
+                                class="suggestion"
+                                data-question="Summarize the uploaded documents."
+                            >
+                                <span>📘</span>
+                                Summarize my documents
+                            </div>
+
+                            <div
+                                class="suggestion"
+                                data-question="Find the important information in my documents."
+                            >
+                                <span>🔍</span>
+                                Find important information
+                            </div>
+
+                            <div
+                                class="suggestion"
+                                data-question="Explain the main topic of my documents in simple words."
+                            >
+                                <span>💡</span>
+                                Explain a complex topic
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Question Input -->
+                <div class="input-container">
+
+                    <div class="question-area">
+
+                        <input
+                            type="text"
+                            id="question-input"
+                            placeholder="Ask anything about your documents..."
+                            autocomplete="off"
+                        >
+
+                        <button
+                            id="send-btn"
+                            type="button"
+                            aria-label="Send question"
+                        >
+                            ↑
+                        </button>
+
+                    </div>
+
+                    <p class="input-disclaimer">
+                        Powered by your local AI · Your documents stay on your device
+                    </p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="/static/script.js"></script>
+
+</body>
+</html>
