@@ -1,0 +1,1463 @@
+
+/* =================================
+   1. THEME VARIABLES
+================================= */
+
+:root {
+    color-scheme: light;
+
+    --bg: #f3f0fa;
+    --surface: #ffffff;
+    --surface-soft: #f8f6fc;
+    --sidebar: #ffffff;
+
+    --text: #29243a;
+    --muted: #858096;
+    --border: #e9e4f1;
+
+    --purple: #9b85e8;
+    --purple-dark: #7861ce;
+    --purple-soft: #eee9fc;
+
+    --yellow: #f5bd62;
+    --blue: #a9c9f1;
+    --pink: #e8a5df;
+
+    --user-message: #b8a4f5;
+    --ai-message: #ffffff;
+
+    --shadow: 0 8px 30px rgba(65, 48, 100, 0.07);
+}
+
+body.dark-mode {
+    color-scheme: dark;
+
+    --bg: #191927;
+    --surface: #232335;
+    --surface-soft: #29293d;
+    --sidebar: #202031;
+
+    --text: #f3efff;
+    --muted: #aaa5bd;
+    --border: #39374e;
+
+    --purple: #a995f2;
+    --purple-dark: #8872dc;
+    --purple-soft: #38314f;
+
+    --yellow: #70532d;
+    --blue: #344c70;
+    --pink: #69466c;
+
+    --user-message: #66539b;
+    --ai-message: #29293d;
+
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =================================
+   2. GLOBAL STYLING
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.25s, color 0.25s;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* =================================
+   3. SIDEBAR
+================================= */
+
+.sidebar {
+    width: 270px;
+    min-width: 270px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 25px 18px;
+    transition: background 0.25s;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 5px 8px 27px;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, #b8a4f5, #8872dc);
+    border-radius: 15px;
+
+    color: white;
+    font-size: 23px;
+    font-weight: bold;
+
+    box-shadow: 0 5px 15px rgba(155, 133, 232, 0.25);
+}
+
+.brand h2 {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.brand span {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.sidebar-content {
+    flex: 1;
+    padding-top: 30px;
+}
+
+.sidebar-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-weight: 700;
+    margin: 0 10px 13px;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px;
+    border-radius: 12px;
+
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.sidebar-item.active {
+    background: var(--purple-soft);
+    color: var(--purple-dark);
+    font-weight: 600;
+}
+
+.documents-label {
+    margin-top: 35px;
+}
+
+
+/* =================================
+   4. PDF UPLOAD CARD
+================================= */
+
+.upload-card {
+    background: var(--surface-soft);
+    border: 1.5px dashed var(--purple);
+    border-radius: 20px;
+
+    padding: 22px 13px;
+    text-align: center;
+}
+
+.upload-icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 13px;
+
+    background: var(--purple-soft);
+    border-radius: 17px;
+    font-size: 25px;
+}
+
+.upload-card h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.upload-card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 17px;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-button {
+    display: block;
+    padding: 12px;
+
+    background: var(--purple);
+    color: white;
+
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.upload-button:hover {
+    background: var(--purple-dark);
+    transform: translateY(-2px);
+}
+
+.upload-hint {
+    display: block;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.file-input:disabled + .upload-hint {
+    opacity: 0.5;
+}
+
+
+/* =================================
+   5. SIDEBAR FOOTER
+================================= */
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 16px 8px 0;
+    border-top: 1px solid var(--border);
+
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    background: #35b879;
+    border-radius: 50%;
+
+    display: inline-block;
+    box-shadow: 0 0 8px rgba(53, 184, 121, 0.35);
+}
+
+
+/* =================================
+   6. MAIN CONTENT AND TOPBAR
+================================= */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    min-height: 95px;
+
+    padding: 20px 38px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.topbar h1 {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.topbar p {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 9px 14px;
+
+    background: #e7f7ef;
+    color: #23885a;
+
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+body.dark-mode .system-status {
+    background: #203d34;
+    color: #8de0b7;
+}
+
+
+/* Theme toggle */
+
+.theme-toggle {
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: var(--surface-soft);
+    color: var(--text);
+
+    font-size: 20px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.theme-toggle:hover {
+    background: var(--purple-soft);
+    transform: rotate(12deg);
+}
+
+
+/* =================================
+   7. CHAT WORKSPACE
+================================= */
+
+.chat-section {
+    flex: 1;
+    width: 100%;
+    max-width: 1050px;
+
+    margin: 0 auto;
+    padding: 30px 35px;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#chat-box {
+    flex: 1;
+    min-height: 300px;
+
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding: 25px 10px;
+}
+
+#chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+
+/* =================================
+   8. WELCOME SCREEN
+================================= */
+
+.welcome-screen {
+    margin: auto;
+    max-width: 570px;
+
+    text-align: center;
+    padding: 35px 15px;
+}
+
+.welcome-icon {
+    width: 75px;
+    height: 75px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 23px;
+
+    background: linear-gradient(135deg, #b8a4f5, #8872dc);
+    border-radius: 25px;
+
+    color: white;
+    font-size: 35px;
+
+    box-shadow: 0 12px 30px rgba(155, 133, 232, 0.25);
+}
+
+.welcome-label {
+    display: inline-block;
+
+    color: var(--purple-dark);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+
+    margin-bottom: 17px;
+}
+
+.welcome-screen h2 {
+    font-size: 29px;
+    line-height: 1.35;
+    margin-bottom: 14px;
+}
+
+.welcome-screen > p {
+    max-width: 460px;
+    margin: 0 auto;
+
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+
+/* Suggestion cards */
+
+.suggestion-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 11px;
+
+    margin-top: 28px;
+}
+
+.suggestion {
+    padding: 15px 18px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    color: var(--text);
+    font-size: 13px;
+    text-align: left;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.suggestion:hover {
+    transform: translateY(-3px);
+    border-color: var(--purple);
+    background: var(--purple-soft);
+}
+
+.suggestion span {
+    margin-right: 12px;
+}
+
+
+/* =================================
+   9. CHAT MESSAGES
+================================= */
+
+.chat-message {
+    max-width: 80%;
+
+    padding: 15px 18px;
+
+    border-radius: 18px;
+
+    font-size: 14px;
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+
+    box-shadow: var(--shadow);
+}
+
+.user-message {
+    align-self: flex-end;
+
+    background: var(--user-message);
+    color: #ffffff;
+
+    border-bottom-right-radius: 5px;
+}
+
+.ai-message {
+    align-self: flex-start;
+
+    background: var(--ai-message);
+    border: 1px solid var(--border);
+
+    color: var(--text);
+
+    border-bottom-left-radius: 5px;
+}
+
+.system-message {
+    align-self: center;
+    max-width: 90%;
+
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+
+    color: var(--muted);
+    font-size: 12px;
+
+    padding: 11px 17px;
+    border-radius: 12px;
+}
+
+.source-list {
+    margin-top: 15px;
+    padding-top: 12px;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--purple-dark);
+    font-size: 12px;
+}
+
+
+/* =================================
+   10. QUESTION INPUT
+================================= */
+
+.input-container {
+    padding-top: 15px;
+}
+
+.question-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+
+    box-shadow: var(--shadow);
+
+    transition: border-color 0.2s;
+}
+
+.question-area:focus-within {
+    border-color: var(--purple);
+}
+
+#question-input {
+    flex: 1;
+    min-width: 0;
+
+    padding: 11px;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: var(--text);
+    font-size: 14px;
+}
+
+#question-input::placeholder {
+    color: var(--muted);
+}
+
+#send-btn {
+    width: 43px;
+    height: 43px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: var(--purple);
+    color: white;
+
+    font-size: 25px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+#send-btn:hover {
+    background: var(--purple-dark);
+    transform: translateY(-2px);
+}
+
+#send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-disclaimer {
+    text-align: center;
+    color: var(--muted);
+
+    font-size: 11px;
+    margin-top: 13px;
+}
+
+
+/* =================================
+   11. RESPONSIVE DESIGN
+================================= */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 225px;
+        min-width: 225px;
+    }
+
+    .topbar {
+        padding: 20px;
+    }
+
+    .chat-section {
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        padding: 15px;
+    }
+
+    .brand {
+        padding-bottom: 15px;
+    }
+
+    .sidebar-content {
+        padding-top: 15px;
+    }
+
+    .sidebar-item,
+    .documents-label {
+        display: none;
+    }
+
+    .upload-card {
+        padding: 14px;
+    }
+
+    .sidebar-footer {
+        margin-top: 15px;
+    }
+
+    .topbar {
+        min-height: 75px;
+        padding: 15px;
+    }
+
+    .topbar h1 {
+        font-size: 17px;
+    }
+
+    .system-status {
+        font-size: 10px;
+        padding: 7px 9px;
+    }
+
+    .chat-section {
+        padding: 10px 15px;
+    }
+
+    .welcome-screen {
+        padding: 25px 5px;
+    }
+
+    .welcome-screen h2 {
+        font-size: 23px;
+    }
+
+    .chat-message {
+        max-width: 95%;
+    }
+
+}
+
+
+/* =================================
+   LIGHT MODE - PASTEL 3D UPGRADE
+================================= */
+
+body:not(.dark-mode) {
+    background:
+        radial-gradient(ellipse at 15% 10%, #e5d9ff 0%, transparent 35%),
+        radial-gradient(ellipse at 90% 85%, #f9dfed 0%, transparent 35%),
+        #eeeaf6;
+}
+
+/* Sidebar */
+body:not(.dark-mode) .sidebar {
+    background: linear-gradient(160deg, #fffaff, #f1eafa);
+    box-shadow: 5px 0 25px rgba(105, 79, 150, 0.07);
+}
+
+/* Topbar */
+body:not(.dark-mode) .topbar {
+    background: linear-gradient(110deg, #fffaff, #f4efff);
+    box-shadow: 0 5px 20px rgba(105, 79, 150, 0.06);
+}
+
+/* Upload card */
+body:not(.dark-mode) .upload-card {
+    background: linear-gradient(145deg, #eee5ff, #fff0f6);
+    border: 1px dashed #a58ce9;
+    box-shadow:
+        0 8px 18px rgba(135, 104, 195, 0.12),
+        inset 0 2px 5px rgba(255, 255, 255, 0.8);
+}
+
+/* Upload icon */
+body:not(.dark-mode) .upload-icon {
+    background: linear-gradient(145deg, #d9c9ff, #f4d5ef);
+    box-shadow: 0 5px 12px rgba(135, 104, 195, 0.18);
+}
+
+/* Upload button */
+body:not(.dark-mode) .upload-button {
+    background: linear-gradient(135deg, #a891ed, #8168d2);
+    box-shadow: 0 5px 12px rgba(129, 104, 210, 0.28);
+}
+
+/* Welcome icon */
+body:not(.dark-mode) .welcome-icon {
+    background: linear-gradient(145deg, #c4b1ff, #9479e5, #e4a9db);
+    box-shadow:
+        0 12px 20px rgba(133, 105, 208, 0.25),
+        0 20px 40px rgba(133, 105, 208, 0.12),
+        inset 0 3px 5px rgba(255, 255, 255, 0.45);
+}
+
+/* Suggestion cards */
+body:not(.dark-mode) .suggestion {
+    background: linear-gradient(145deg, #fffefa, #f2edfb);
+    box-shadow:
+        0 5px 12px rgba(89, 69, 130, 0.08),
+        0 2px 3px rgba(89, 69, 130, 0.05);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(1) {
+    background: linear-gradient(135deg, #fff0cf, #ffe2ae);
+    border-color: #f2d49c;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(2) {
+    background: linear-gradient(135deg, #e1efff, #c9ddfa);
+    border-color: #c2d6f4;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(3) {
+    background: linear-gradient(135deg, #fbe5f5, #f1d0e9);
+    border-color: #ecc9e3;
+}
+
+body:not(.dark-mode) .suggestion:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 12px 22px rgba(89, 69, 130, 0.15);
+}
+
+/* AI message */
+body:not(.dark-mode) .ai-message {
+    background: linear-gradient(145deg, #fffaff, #f0eaff);
+    border: 1px solid #e1d5f2;
+    box-shadow:
+        0 7px 18px rgba(105, 79, 150, 0.09),
+        0 2px 4px rgba(105, 79, 150, 0.04);
+}
+
+/* User message */
+body:not(.dark-mode) .user-message {
+    background: linear-gradient(135deg, #b7a3f4, #9179df);
+    box-shadow: 0 7px 16px rgba(132, 105, 211, 0.23);
+}
+
+/* Question input */
+body:not(.dark-mode) .question-area {
+    background: linear-gradient(145deg, #fffaff, #f0eafa);
+    box-shadow:
+        0 8px 20px rgba(105, 79, 150, 0.10),
+        inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+/* Send button */
+body:not(.dark-mode) #send-btn {
+    background: linear-gradient(145deg, #a891ed, #8067d0);
+    box-shadow: 0 5px 12px rgba(129, 104, 210, 0.28);
+}
+
+/* Theme button */
+body:not(.dark-mode) .theme-toggle {
+    background: linear-gradient(145deg, #fff5d9, #f9e4b8);
+    border-color: #f0d8a6;
+    box-shadow: 0 4px 10px rgba(160, 123, 58, 0.12);
+}
+
+/* Smooth hover depth */
+body:not(.dark-mode) .upload-card,
+body:not(.dark-mode) .ai-message,
+body:not(.dark-mode) .question-area {
+    transition: box-shadow 0.25s, transform 0.25s;
+}
+
+
+
+/* ==========================================
+   REFINED LIGHT THEME
+   White surfaces + lavender centre glow
+========================================== */
+
+body:not(.dark-mode) {
+    background:
+        radial-gradient(
+            ellipse at 58% 48%,
+            #dfd3ff 0%,
+            #eee7ff 28%,
+            #f7f3ff 53%,
+            #ffffff 85%
+        );
+
+    padding: 14px;
+}
+
+/* Main app layout */
+body:not(.dark-mode) .app-container {
+    gap: 14px;
+    min-height: calc(100vh - 28px);
+}
+
+/* Rounded white sidebar */
+body:not(.dark-mode) .sidebar {
+    background: #ffffff;
+    border: 1px solid #eee9f7;
+    border-radius: 28px;
+
+    box-shadow:
+        0 10px 35px rgba(91, 70, 135, 0.08),
+        0 2px 8px rgba(91, 70, 135, 0.04);
+}
+
+/* Main workspace with lavender centre */
+body:not(.dark-mode) .main-content {
+    background:
+        radial-gradient(
+            ellipse at 52% 48%,
+            #e8deff 0%,
+            #f2edff 32%,
+            #faf8ff 65%,
+            #ffffff 100%
+        );
+
+    border: 1px solid #eee9f7;
+    border-radius: 28px;
+    overflow: hidden;
+
+    box-shadow:
+        0 12px 40px rgba(91, 70, 135, 0.09),
+        0 3px 10px rgba(91, 70, 135, 0.04);
+}
+
+/* Pure white topbar */
+body:not(.dark-mode) .topbar {
+    background: #ffffff;
+    border-bottom: 1px solid #f0ebf7;
+    padding: 23px 35px;
+}
+
+/* Chat area keeps the lavender atmosphere */
+body:not(.dark-mode) .chat-section {
+    background: transparent;
+}
+
+/* White upload card */
+body:not(.dark-mode) .upload-card {
+    background: #ffffff;
+    border: 1.5px dashed #c3b1f2;
+    border-radius: 24px;
+
+    box-shadow:
+        0 10px 25px rgba(124, 99, 185, 0.09),
+        inset 0 1px 3px #ffffff;
+}
+
+/* Softer upload icon */
+body:not(.dark-mode) .upload-icon {
+    background: linear-gradient(
+        145deg,
+        #eee7ff,
+        #e4d9ff
+    );
+
+    border-radius: 19px;
+}
+
+/* White suggestion cards */
+body:not(.dark-mode) .suggestion {
+    background: #ffffff;
+    border: 1px solid rgba(214, 202, 238, 0.8);
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 18px rgba(92, 70, 140, 0.08),
+        0 2px 5px rgba(92, 70, 140, 0.04);
+}
+
+body:not(.dark-mode) .suggestion:nth-child(1) {
+    background: #fffaf0;
+    border-color: #f4e4c6;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(2) {
+    background: #f3f8ff;
+    border-color: #dce9fa;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(3) {
+    background: #fff5fc;
+    border-color: #f1ddef;
+}
+
+/* More rounded hover effect */
+body:not(.dark-mode) .suggestion:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 25px rgba(92, 70, 140, 0.13);
+}
+
+/* White AI response cards */
+body:not(.dark-mode) .ai-message {
+    background: #ffffff;
+    border: 1px solid #eee7f7;
+    border-radius: 22px;
+    border-bottom-left-radius: 7px;
+
+    box-shadow:
+        0 8px 22px rgba(92, 70, 140, 0.09),
+        0 2px 5px rgba(92, 70, 140, 0.04);
+}
+
+/* Rounded user messages */
+body:not(.dark-mode) .user-message {
+    border-radius: 22px;
+    border-bottom-right-radius: 7px;
+}
+
+/* Pure white input surface */
+body:not(.dark-mode) .question-area {
+    background: #ffffff;
+    border: 1px solid #e8def8;
+    border-radius: 24px;
+
+    box-shadow:
+        0 12px 28px rgba(92, 70, 140, 0.12),
+        0 3px 7px rgba(92, 70, 140, 0.05);
+}
+
+/* Rounded send button */
+body:not(.dark-mode) #send-btn {
+    border-radius: 16px;
+}
+
+/* Softer theme toggle */
+body:not(.dark-mode) .theme-toggle {
+    background: #ffffff;
+    border: 1px solid #eee7f7;
+    border-radius: 16px;
+}
+
+/* Welcome icon */
+body:not(.dark-mode) .welcome-icon {
+    border-radius: 26px;
+}
+
+/* Rounded status badge */
+body:not(.dark-mode) .system-status {
+    border-radius: 25px;
+}
+
+/* Smooth visual transitions */
+body:not(.dark-mode) .sidebar,
+body:not(.dark-mode) .main-content,
+body:not(.dark-mode) .upload-card,
+body:not(.dark-mode) .suggestion,
+body:not(.dark-mode) .ai-message,
+body:not(.dark-mode) .question-area {
+    transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+
+    body:not(.dark-mode) {
+        padding: 8px;
+    }
+
+    body:not(.dark-mode) .app-container {
+        gap: 8px;
+        min-height: calc(100vh - 16px);
+    }
+
+    body:not(.dark-mode) .sidebar,
+    body:not(.dark-mode) .main-content {
+        border-radius: 23px;
+    }
+
+}
+
+
+
+/* ==========================================
+   REFINED DARK THEME
+   Rounded layout + subtle purple glow
+========================================== */
+
+body.dark-mode {
+    background:
+        radial-gradient(
+            ellipse at 58% 48%,
+            #302747 0%,
+            #211e32 42%,
+            #191927 85%
+        );
+
+    padding: 14px;
+}
+
+/* Main app layout */
+body.dark-mode .app-container {
+    gap: 14px;
+    min-height: calc(100vh - 28px);
+}
+
+/* Rounded sidebar */
+body.dark-mode .sidebar {
+    background: linear-gradient(160deg, #252438, #201f30);
+    border: 1px solid #39354e;
+    border-radius: 28px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.22),
+        0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Main workspace with purple centre glow */
+body.dark-mode .main-content {
+    background:
+        radial-gradient(
+            ellipse at 52% 48%,
+            #332947 0%,
+            #292438 35%,
+            #242233 68%,
+            #222131 100%
+        );
+
+    border: 1px solid #39354e;
+    border-radius: 28px;
+    overflow: hidden;
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Topbar */
+body.dark-mode .topbar {
+    background: #232233;
+    border-bottom: 1px solid #39354e;
+    padding: 23px 35px;
+}
+
+/* Chat area */
+body.dark-mode .chat-section {
+    background: transparent;
+}
+
+/* Upload card */
+body.dark-mode .upload-card {
+    background: linear-gradient(145deg, #302a42, #29263a);
+    border: 1.5px dashed #8872dc;
+    border-radius: 24px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.18),
+        inset 0 1px 3px rgba(255, 255, 255, 0.03);
+}
+
+/* Upload icon */
+body.dark-mode .upload-icon {
+    background: linear-gradient(145deg, #484064, #39334f);
+    border-radius: 19px;
+}
+
+/* Upload button */
+body.dark-mode .upload-button {
+    background: linear-gradient(135deg, #a995f2, #7861ce);
+    box-shadow: 0 5px 14px rgba(137, 112, 220, 0.25);
+}
+
+/* Suggestion cards */
+body.dark-mode .suggestion {
+    border-radius: 20px;
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.16),
+        0 2px 5px rgba(0, 0, 0, 0.10);
+}
+
+body.dark-mode .suggestion:nth-child(1) {
+    background: linear-gradient(135deg, #393345, #332e40);
+    border-color: #62513e;
+}
+
+body.dark-mode .suggestion:nth-child(2) {
+    background: linear-gradient(135deg, #303747, #2b3443);
+    border-color: #40516b;
+}
+
+body.dark-mode .suggestion:nth-child(3) {
+    background: linear-gradient(135deg, #3b3040, #342b3a);
+    border-color: #624565;
+}
+
+body.dark-mode .suggestion:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* AI response */
+body.dark-mode .ai-message {
+    background: linear-gradient(145deg, #302c40, #292638);
+    border: 1px solid #423b57;
+    border-radius: 22px;
+    border-bottom-left-radius: 7px;
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.18),
+        0 2px 5px rgba(0, 0, 0, 0.10);
+}
+
+/* User response */
+body.dark-mode .user-message {
+    background: linear-gradient(135deg, #7865b6, #5d4b96);
+    border-radius: 22px;
+    border-bottom-right-radius: 7px;
+
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.20);
+}
+
+/* Question input */
+body.dark-mode .question-area {
+    background: linear-gradient(145deg, #302c40, #282638);
+    border: 1px solid #48405e;
+    border-radius: 24px;
+
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.22),
+        0 3px 7px rgba(0, 0, 0, 0.12);
+}
+
+/* Send button */
+body.dark-mode #send-btn {
+    background: linear-gradient(145deg, #a995f2, #7861ce);
+    border-radius: 16px;
+    box-shadow: 0 5px 12px rgba(137, 112, 220, 0.25);
+}
+
+/* Theme toggle */
+body.dark-mode .theme-toggle {
+    background: linear-gradient(145deg, #39334e, #302b43);
+    border: 1px solid #51476d;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Welcome icon */
+body.dark-mode .welcome-icon {
+    background: linear-gradient(145deg, #b09af5, #7861ce, #9b70ae);
+    border-radius: 26px;
+
+    box-shadow:
+        0 12px 25px rgba(137, 112, 220, 0.25),
+        0 20px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Smooth transitions */
+body.dark-mode .sidebar,
+body.dark-mode .main-content,
+body.dark-mode .topbar,
+body.dark-mode .upload-card,
+body.dark-mode .suggestion,
+body.dark-mode .ai-message,
+body.dark-mode .question-area {
+    transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+
+    body.dark-mode {
+        padding: 8px;
+    }
+
+    body.dark-mode .app-container {
+        gap: 8px;
+        min-height: calc(100vh - 16px);
+    }
+
+    body.dark-mode .sidebar,
+    body.dark-mode .main-content {
+        border-radius: 23px;
+    }
+
+}
+
+
+
+/* ==========================================
+   RAGdocAI - COLORFUL CHAT CARDS
+   Both Light and Dark Themes
+========================================== */
+
+/* Shared rounded card shape */
+.chat-message {
+    border-radius: 24px;
+    padding: 18px 21px;
+    backdrop-filter: blur(12px);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ---------- LIGHT THEME ---------- */
+
+body:not(.dark-mode) .ai-message {
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f1eaff 55%,
+        #e7e0ff 100%
+    );
+    border: 1px solid #dcd0f6;
+    border-bottom-left-radius: 7px;
+
+    box-shadow:
+        0 10px 25px rgba(130, 101, 190, 0.13),
+        0 3px 8px rgba(130, 101, 190, 0.07);
+}
+
+body:not(.dark-mode) .user-message {
+    background: linear-gradient(
+        135deg,
+        #bca9f5,
+        #9881e5,
+        #c69cdb
+    );
+    color: #ffffff;
+    border-bottom-right-radius: 7px;
+
+    box-shadow:
+        0 10px 24px rgba(132, 104, 205, 0.25),
+        0 3px 8px rgba(132, 104, 205, 0.12);
+}
+
+body:not(.dark-mode) .system-message {
+    background: linear-gradient(
+        135deg,
+        #fff0d6,
+        #ffe5ee,
+        #f1e6ff
+    );
+    color: #655078;
+    border: 1px solid #ead8f4;
+    border-radius: 20px;
+
+    box-shadow: 0 7px 18px rgba(150, 110, 160, 0.10);
+}
+
+/* Sources section */
+body:not(.dark-mode) .source-list {
+    background: linear-gradient(135deg, #f7f2ff, #fff5fb);
+    border: 1px solid #e7dcf5;
+    border-radius: 15px;
+    padding: 13px;
+    color: #7961b5;
+}
+
+
+/* ---------- DARK THEME ---------- */
+
+body.dark-mode .ai-message {
+    background: linear-gradient(
+        135deg,
+        #39324e,
+        #302b45,
+        #3c3048
+    );
+    border: 1px solid #55476d;
+    border-bottom-left-radius: 7px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.24),
+        0 3px 8px rgba(0, 0, 0, 0.14);
+}
+
+body.dark-mode .user-message {
+    background: linear-gradient(
+        135deg,
+        #806bbd,
+        #6956a5,
+        #926caa
+    );
+    color: #ffffff;
+    border-bottom-right-radius: 7px;
+
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.24),
+        0 3px 8px rgba(0, 0, 0, 0.14);
+}
+
+body.dark-mode .system-message {
+    background: linear-gradient(
+        135deg,
+        #40364a,
+        #3b344e,
+        #463448
+    );
+    color: #e4d6f5;
+    border: 1px solid #5b496a;
+    border-radius: 20px;
+
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* Sources section */
+body.dark-mode .source-list {
+    background: linear-gradient(135deg, #342d48, #3b3045);
+    border: 1px solid #55466b;
+    border-radius: 15px;
+    padding: 13px;
+    color: #c4adf5;
+}
+
+
+/* ---------- SOURCE TEXT ---------- */
+
+.source-list strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.source-list p {
+    color: inherit;
+    line-height: 1.8;
+}
+
+
+
+/* ==========================================
+   CHATGPT-STYLE CHAT LAYOUT
+========================================== */
+
+.main-content {
+    height: calc(100vh - 28px);
+    min-height: 0;
+}
+
+.chat-section {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#chat-box {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+}
+
+.input-container {
+    flex-shrink: 0;
+    position: relative;
+    padding: 15px 0 5px;
+}
+
+/* Keep input area visible on mobile too */
+@media (max-width: 600px) {
+    .main-content {
+        height: auto;
+        min-height: 65vh;
+    }
+
+    .chat-section {
+        min-height: 500px;
+    }
+
+    #chat-box {
+        min-height: 300px;
+    }
+}
+
+
