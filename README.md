@@ -8,7 +8,7 @@ RAGdocAI is a local document question-answering application that processes PDF d
 
 Instead of relying only on an AI model's general knowledge, RAGdocAI retrieves relevant information from uploaded documents and uses that context to generate answers.
 
-The project combines a complete RAG pipeline with a locally hosted web application. It uses Python, FastAPI, Ollama and ChromaDB without requiring paid AI APIs.
+The project combines a complete RAG pipeline with a locally hosted web application. It uses Python, FastAPI, Ollama, and ChromaDB without requiring paid AI APIs.
 
 The main goal is to understand and implement the complete RAG pipeline while learning how to connect a Python backend with a modern frontend.
 
@@ -44,7 +44,7 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 ### Web Application
 
 - [x] Build a FastAPI backend.
-- [x] Create a frontend using HTML, CSS and JavaScript.
+- [x] Create a frontend using HTML, CSS, and JavaScript.
 - [x] Implement PDF uploads through the web interface.
 - [x] Support uploading multiple PDF files.
 - [x] Automatically process uploaded PDFs and store their chunks.
@@ -54,7 +54,7 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 - [x] Display document source and page references.
 - [x] Add clickable question suggestions.
 - [x] Implement Light and Dark themes.
-- [x] Add rounded cards, gradients and responsive styling.
+- [x] Add rounded cards, gradients, and responsive styling.
 - [x] Automatically scroll to the latest chat message.
 - [x] Keep the question input area at the bottom of the chat workspace.
 
@@ -84,9 +84,9 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 
 1. **Document Loading:** Read PDF files and extract text page by page using PyMuPDF.
 2. **Text Chunking:** Divide extracted text into smaller pieces using sentence-aware chunking with controlled overlap.
-3. **Metadata Preservation:** Attach document source, page number and unique document ID to every chunk.
+3. **Metadata Preservation:** Attach document source, page number, and unique document ID to every chunk.
 4. **Embeddings:** Convert text chunks into numerical vectors using Nomic Embed Text.
-5. **Vector Storage:** Store embeddings, document chunks and metadata in ChromaDB.
+5. **Vector Storage:** Store embeddings, document chunks, and metadata in ChromaDB.
 6. **Semantic Retrieval:** Find relevant chunks using embedding similarity.
 7. **Keyword Retrieval:** Find relevant chunks using BM25 keyword search.
 8. **Query Rewriting:** Reformulate user questions to improve retrieval.
@@ -101,9 +101,9 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 The web application connects the frontend to the RAG pipeline through FastAPI.
 
 1. **Frontend:** HTML provides the application structure.
-2. **Styling:** CSS provides the layout, responsive design, gradients and theme support.
-3. **Frontend Logic:** JavaScript handles PDF uploads, chat interactions and API requests.
-4. **Backend:** FastAPI provides endpoints for the homepage, health check, PDF uploads and questions.
+2. **Styling:** CSS provides the layout, responsive design, gradients, and theme support.
+3. **Frontend Logic:** JavaScript handles PDF uploads, chat interactions, and API requests.
+4. **Backend:** FastAPI provides endpoints for the homepage, health check, PDF uploads, and questions.
 5. **Document Upload:** Uploaded PDFs are saved in the local `documents/` directory and processed through the RAG pipeline.
 6. **Question Processing:** Questions are sent to the backend, which calls the reusable `ask_question()` function.
 7. **AI Response:** The backend returns the generated answer to the frontend, including source information.
@@ -125,7 +125,10 @@ RAGdocAI/
 ├── documents/
 │   ├── sample.pdf
 │   ├── sample2_python.pdf
-│   └── sample3_databases.pdf
+│   ├── sample3_databases.pdf
+│   ├── Database_Fundamentals_Test.pdf
+│   ├── Python_Basics_Test.pdf
+│   └── RAG_Introduction_Test.pdf
 │
 ├── data/
 │   └── chroma_db/
@@ -169,7 +172,8 @@ RAGdocAI/
 - `data/chroma_db/` contains the locally stored ChromaDB database and is not intended to be committed to GitHub.
 - `PROJECT_CONTEXT.md` is a private project context file and is excluded from GitHub.
 - `.venv/` and pytest cache are local development files.
-- Uploaded PDFs are stored locally in `documents/`.
+- Uploaded PDFs are stored locally in the `documents/` directory.
+- The sample PDFs in `documents/` are provided for testing document ingestion and question answering.
 
 ## Installation and Setup
 
@@ -295,6 +299,18 @@ Test coverage includes:
 
 **Note:** Some integration tests require Ollama and the locally available AI models. ChromaDB currently produces a dependency deprecation warning during testing; it does not cause test failures.
 
+### Web Application Verification
+
+The local web application was also tested manually.
+
+- PDF uploads completed successfully.
+- Multiple PDF documents were processed.
+- AI-generated answers were verified using document content.
+- Source and page references were displayed.
+- Insufficient-information handling was tested.
+- Light and Dark themes were tested.
+- Responsive layout was checked on desktop and mobile views.
+
 ## Project Status
 
 **Currently in Development**
@@ -323,13 +339,14 @@ Test coverage includes:
 - [x] Retrieval evaluation using Precision@K and Recall@K.
 - [x] Automated pytest testing with 27 passing tests.
 - [x] FastAPI backend integration.
-- [x] HTML, CSS and JavaScript frontend.
+- [x] HTML, CSS, and JavaScript frontend.
 - [x] PDF upload through the web interface.
 - [x] Interactive document chat.
 - [x] Source and page reference display.
 - [x] Light and Dark theme support.
 - [x] Responsive frontend styling.
 - [x] Automatic chat scrolling and bottom-positioned question input.
+- [x] Manual functional testing of the local web application.
 
 ### Upcoming
 
@@ -337,7 +354,8 @@ Test coverage includes:
 - [ ] Add chat history.
 - [ ] Support additional document formats.
 - [ ] Improve retrieval quality and evaluation coverage.
-- [ ] Further improve application performance and user experience.
+- [ ] Further improve application performance and accessibility.
+- [ ] Add custom browser favicon.
 
 ## Project Goals
 
@@ -356,11 +374,11 @@ RAGdocAI is designed around local processing using Ollama and locally stored pro
 
 No paid API keys are required for the core functionality.
 
-Documents, embeddings and the vector database are stored locally on the computer. Internet access may be needed initially to download Python packages and AI models.
+Documents, embeddings, and the vector database are stored locally on the computer. Internet access may be needed initially to download Python packages and AI models.
 
 ## Future Improvements
 
-- Support for PDF, TXT and DOCX documents.
+- Support for PDF, TXT, and DOCX documents.
 - Improved chunking strategies.
 - Further improvements to retrieval quality.
 - More comprehensive retrieval evaluation.
