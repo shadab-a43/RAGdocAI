@@ -1516,3 +1516,168 @@ body:not(.dark-mode) .upload-card {
     box-shadow: 0 10px 25px rgba(112, 85, 160, 0.10);
 }
 
+
+/* =====================================
+   RAGdocAI - ENHANCED LIGHT THEME
+   ===================================== */
+
+body:not(.dark-mode) {
+    background: linear-gradient(
+        135deg,
+        #D9D0EC 0%,
+        #D8DDF0 50%,
+        #EAD3E5 100%
+    ) !important;
+}
+
+/* SIDEBAR */
+body:not(.dark-mode) .sidebar {
+    background: linear-gradient(
+        160deg,
+        #E5D9F2 0%,
+        #D8D0EC 100%
+    ) !important;
+    border-right: 1px solid #C6B5DF !important;
+}
+
+/* MAIN WORKSPACE */
+body:not(.dark-mode) .main-content {
+    background: linear-gradient(
+        135deg,
+        #DDD9EF 0%,
+        #D9E0F1 48%,
+        #EBD9E9 100%
+    ) !important;
+    border: 1px solid #CEC2E3 !important;
+}
+
+/* TOPBAR */
+body:not(.dark-mode) .topbar {
+    background: linear-gradient(
+        110deg,
+        #D8CDEB,
+        #DCD8EF,
+        #E9D7E9
+    ) !important;
+    border-bottom: 1px solid #C9B9DE !important;
+}
+
+/* UPLOAD CARD */
+body:not(.dark-mode) .upload-card {
+    background: linear-gradient(
+        145deg,
+        #EDE0F5,
+        #E8D8F0,
+        #DFD9F2
+    ) !important;
+    border: 1.5px dashed #9E83D6 !important;
+    box-shadow: 0 12px 28px rgba(105, 76, 160, 0.16) !important;
+}
+
+/* CHAT SUGGESTIONS */
+body:not(.dark-mode) .suggestion:nth-child(1) {
+    background: linear-gradient(135deg, #FFE3B5, #e7cba3) !important;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(2) {
+    background: linear-gradient(135deg, #D1E3FF, #BCD5FA) !important;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(3) {
+    background: linear-gradient(135deg, #F5D2EB, #EDBFE0) !important;
+}
+
+/* QUESTION INPUT */
+body:not(.dark-mode) .question-area {
+    background: linear-gradient(
+        120deg,
+        #F1E9FA,
+        #E7E3F6
+    ) !important;
+    border: 1px solid #C8B7E3 !important;
+    box-shadow: 0 10px 28px rgba(100, 75, 150, 0.14) !important;
+}
+
+/* WELCOME ICON */
+body:not(.dark-mode) .welcome-icon {
+    background: linear-gradient(
+        135deg,
+        #A88BE8,
+        #8D78D9,
+        #C58BCB
+    ) !important;
+    box-shadow: 0 12px 28px rgba(120, 85, 180, 0.25) !important;
+}
+
+
+
+/* RAGdocAI - RICH PASTEL LIGHT THEME */
+
+body:not(.dark-mode) {
+    background: linear-gradient(
+        135deg,
+        #C9C3E0,
+        #C4CBE4,
+        #DEC8DF
+    ) !important;
+}
+
+body:not(.dark-mode) .sidebar {
+    background: linear-gradient(
+        160deg,
+        #D4C5E8,
+        #C9B8E2
+    ) !important;
+    border-right: 1px solid #B5A2D1 !important;
+}
+
+body:not(.dark-mode) .main-content {
+    background: linear-gradient(
+        135deg,
+        #C4CBE4 0%,
+        #C9C7E2 55%,
+        #DEC8DF 100%
+    ) !important;
+    border: 1px solid #B9B3D7 !important;
+}
+
+body:not(.dark-mode) .topbar {
+    background: linear-gradient(
+        110deg,
+        #C5B5DE,
+        #D0BFE1,
+        #DCC6DF
+    ) !important;
+    border-bottom: 1px solid #B7A4D0 !important;
+}
+
+body:not(.dark-mode) .upload-card {
+    background: linear-gradient(
+        145deg,
+        #E5D3ED,
+        #DCCBEA
+    ) !important;
+    border: 1.5px dashed #9679CC !important;
+    box-shadow: 0 12px 28px rgba(85, 65, 140, 0.18) !important;
+}
+
+body:not(.dark-mode) .question-area {
+    background: linear-gradient(
+        120deg,
+        #E0D6EF,
+        #D5D3EB
+    ) !important;
+    border: 1px solid #B9A7D7 !important;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(1) {
+    background: linear-gradient(135deg, #F5D49C, #F0C77F) !important;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(2) {
+    background: linear-gradient(135deg, #BFD4F2, #AFC9EC) !important;
+}
+
+body:not(.dark-mode) .suggestion:nth-child(3) {
+    background: linear-gradient(135deg, #EBC1DF, #DFAFD3) !important;
+}
