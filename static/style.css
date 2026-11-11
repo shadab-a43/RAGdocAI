@@ -1461,3 +1461,58 @@ body.dark-mode .source-list {
 }
 
 
+/* REFINED LIGHT THEME - SOFT LAVENDER */
+
+@media (prefers-color-scheme: light) {
+    body:not(.dark-mode) {
+        background: #E8E6F2;
+    }
+}
+
+body:not(.dark-mode) {
+    background: linear-gradient(
+        135deg,
+        #E6E2F0 0%,
+        #E8E6F2 55%,
+        #F0E4EE 100%
+    );
+}
+
+body:not(.dark-mode) .sidebar {
+    background: linear-gradient(
+        160deg,
+        #EDE7F5,
+        #E5DDF1
+    );
+    border-right: 1px solid #D8CEE8;
+}
+
+body:not(.dark-mode) .main-content {
+    background: linear-gradient(
+        135deg,
+        #E8E6F2 0%,
+        #E9E4F2 55%,
+        #F0E5EF 100%
+    );
+    border: 1px solid #DED5EA;
+}
+
+body:not(.dark-mode) .topbar {
+    background: linear-gradient(
+        110deg,
+        #E3DDF0,
+        #EAE3F2
+    );
+    border-bottom: 1px solid #D8CEE8;
+}
+
+body:not(.dark-mode) .upload-card {
+    background: linear-gradient(
+        145deg,
+        #F1EAF6,
+        #F0E5F0
+    );
+    border-color: #B9A5E8;
+    box-shadow: 0 10px 25px rgba(112, 85, 160, 0.10);
+}
+
