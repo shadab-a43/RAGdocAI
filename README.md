@@ -1,20 +1,36 @@
 # RAGdocAI
 
+**Intelligent Document Retrieval & AI-Powered Answers**
+
 A beginner-friendly, local-first AI-powered document question-answering system built using **Retrieval-Augmented Generation (RAG)**.
+
+RAGdocAI is a local document question-answering application that allows users to upload PDF documents and ask questions about their content through a web-based interface.
+
+Instead of relying only on an AI model's general knowledge, RAGdocAI retrieves relevant information from uploaded documents and uses that context to generate answers with source references.
+
+The project combines a complete RAG pipeline with a locally hosted web application using Python, FastAPI, Ollama, and ChromaDB. No paid AI APIs are required.
+
+The primary goal is to understand and implement the complete RAG pipeline while learning how to connect a Python backend with a modern frontend.
+
+---
 
 ## About the Project
 
-RAGdocAI is a local document question-answering application that processes PDF documents and allows users to ask questions about their content through a web-based interface.
+RAGdocAI follows a local-first approach:
 
-Instead of relying only on an AI model's general knowledge, RAGdocAI retrieves relevant information from uploaded documents and uses that context to generate answers.
+- PDF documents are processed locally.
+- Text is extracted and divided into smaller chunks.
+- Local embedding models convert text into numerical vectors.
+- ChromaDB stores document embeddings and metadata.
+- Hybrid Search combines semantic and keyword-based retrieval.
+- FlashRank reranks retrieved results.
+- A locally running LLM generates answers using retrieved document context.
 
-The project combines a complete RAG pipeline with a locally hosted web application. It uses Python, FastAPI, Ollama, and ChromaDB without requiring paid AI APIs.
-
-The main goal is to understand and implement the complete RAG pipeline while learning how to connect a Python backend with a modern frontend.
+The application also provides a web interface where users can upload PDFs, ask questions, view answers, and see their document sources.
 
 ## Main Features
 
-### Document Processing and Retrieval
+### 1. Document Processing and Storage
 
 - [x] Load and read PDF documents.
 - [x] Support multiple PDF documents.
@@ -25,6 +41,11 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 - [x] Generate unique document-specific chunk IDs.
 - [x] Generate numerical embeddings using Ollama.
 - [x] Store embeddings and metadata in ChromaDB.
+- [x] Handle repeated PDF ingestion without creating duplicate records.
+- [x] Update existing document chunks while preserving other documents.
+
+### 2. Advanced Retrieval System
+
 - [x] Retrieve relevant information using semantic similarity search.
 - [x] Implement BM25 keyword search.
 - [x] Combine semantic and keyword search using Reciprocal Rank Fusion (RRF).
@@ -33,20 +54,23 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 - [x] Implement FlashRank-based reranking.
 - [x] Implement similarity threshold filtering.
 - [x] Return retrieved text with source and page information.
-- [x] Generate answers using a locally running LLM.
-- [x] Handle insufficient information and empty document collections.
-- [x] Handle repeated PDF ingestion without creating duplicate records.
-- [x] Update existing document chunks while preserving other documents.
-- [x] Implement retrieval evaluation using Precision@K and Recall@K.
-- [x] Organize automated tests using pytest.
-- [x] Verify the complete pipeline with 27 passing test cases.
+- [x] Evaluate retrieval using Precision@K and Recall@K.
 
-### Web Application
+### 3. Answer Generation
+
+- [x] Generate answers using a locally running LLM.
+- [x] Use retrieved document context for answer generation.
+- [x] Display document source and page references.
+- [x] Handle insufficient information.
+- [x] Handle empty document collections.
+- [x] Avoid generating unsupported answers when relevant document information is unavailable.
+
+### 4. Web Application
 
 - [x] Build a FastAPI backend.
 - [x] Create a frontend using HTML, CSS, and JavaScript.
 - [x] Implement PDF uploads through the web interface.
-- [x] Support uploading multiple PDF files.
+- [x] Support multiple PDF documents through separate uploads.
 - [x] Automatically process uploaded PDFs and store their chunks.
 - [x] Connect the frontend with the backend using API endpoints.
 - [x] Implement an interactive document question-answering interface.
@@ -54,9 +78,28 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 - [x] Display document source and page references.
 - [x] Add clickable question suggestions.
 - [x] Implement Light and Dark themes.
-- [x] Add rounded cards, gradients, and responsive styling.
+- [x] Remember the selected theme after refreshing the page.
+- [x] Add responsive styling for desktop and mobile screens.
 - [x] Automatically scroll to the latest chat message.
 - [x] Keep the question input area at the bottom of the chat workspace.
+- [x] Add a custom browser favicon.
+- [x] Verify frontend performance and accessibility using Lighthouse.
+
+### 5. Testing and Reliability
+
+- [x] Organize automated tests using pytest.
+- [x] Test individual RAG components.
+- [x] Test the complete RAG pipeline.
+- [x] Test empty document collection handling.
+- [x] Verify the complete pipeline with 27 passing test cases.
+
+## User Interface Guide
+
+Want to see how RAGdocAI works?
+
+The separate UI guide includes screenshots of the home screen, document question-answering interface, and dark mode.
+
+**[View Step-by-Step UI Guide →](README_UI.md)**
 
 ## Technology Stack
 
@@ -80,7 +123,7 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 
 ## Project Architecture
 
-### RAG Pipeline
+### 1. RAG Pipeline
 
 1. **Document Loading:** Read PDF files and extract text page by page using PyMuPDF.
 2. **Text Chunking:** Divide extracted text into smaller pieces using sentence-aware chunking with controlled overlap.
@@ -96,7 +139,7 @@ The main goal is to understand and implement the complete RAG pipeline while lea
 12. **Generation:** Pass retrieved context to a local LLM using Ollama.
 13. **Response:** Generate context-based answers with source and page references.
 
-### Web Application Architecture
+### 2. Web Application Architecture
 
 The web application connects the frontend to the RAG pipeline through FastAPI.
 
@@ -106,7 +149,7 @@ The web application connects the frontend to the RAG pipeline through FastAPI.
 4. **Backend:** FastAPI provides endpoints for the homepage, health check, PDF uploads, and questions.
 5. **Document Upload:** Uploaded PDFs are saved in the local `documents/` directory and processed through the RAG pipeline.
 6. **Question Processing:** Questions are sent to the backend, which calls the reusable `ask_question()` function.
-7. **AI Response:** The backend returns the generated answer to the frontend, including source information.
+7. **AI Response:** The backend returns the generated answer to the frontend, including available source information.
 
 ## Project Structure
 
@@ -120,7 +163,13 @@ RAGdocAI/
 │
 ├── static/
 │   ├── style.css
-│   └── script.js
+│   ├── script.js
+│   └── favicon.png
+│
+├── screenshots/
+│   ├── 01-home-screen.png
+│   ├── 02-ask-question.png
+│   └── 03-dark-mode.png
 │
 ├── documents/
 │   ├── sample.pdf
@@ -164,16 +213,18 @@ RAGdocAI/
 ├── .gitignore
 ├── .gitattributes
 ├── requirements.txt
-└── README.md
+├── README.md
+└── README_UI.md
 ```
 
 **Note:**
 
-- `data/chroma_db/` contains the locally stored ChromaDB database and is not intended to be committed to GitHub.
+- `data/chroma_db/` contains the locally stored ChromaDB database and is excluded from GitHub.
 - `PROJECT_CONTEXT.md` is a private project context file and is excluded from GitHub.
 - `.venv/` and pytest cache are local development files.
 - Uploaded PDFs are stored locally in the `documents/` directory.
-- The sample PDFs in `documents/` are provided for testing document ingestion and question answering.
+- The sample PDFs are used for testing document ingestion and question answering.
+- The project structure above represents the main application files; local development and generated files may differ.
 
 ## Installation and Setup
 
@@ -192,7 +243,7 @@ python -m venv .venv
 
 ### 3. Activate the Virtual Environment
 
-Windows PowerShell:
+**Windows PowerShell:**
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -206,7 +257,11 @@ python -m pip install -r requirements.txt
 
 ### 5. Install and Run Ollama
 
-Install Ollama and download the required local models:
+Install Ollama from its official website:
+
+https://ollama.com/
+
+Download the required local models:
 
 ```bash
 ollama pull llama3.2:3b
@@ -227,9 +282,7 @@ python -m uvicorn app:app --reload
 
 Open the following address in your browser:
 
-```text
-http://127.0.0.1:8000
-```
+**http://127.0.0.1:8000**
 
 The application runs locally on your computer.
 
@@ -237,9 +290,10 @@ The application runs locally on your computer.
 
 1. Open RAGdocAI in your browser.
 2. Click **Add PDF files**.
-3. Select one or multiple PDF documents.
+3. Select a PDF document.
 4. Wait for document processing to complete.
 5. The application displays the processing status and number of stored chunks.
+6. Repeat the process to add more PDF documents.
 
 Uploaded documents are saved in the local `documents/` directory.
 
@@ -251,6 +305,8 @@ The application retrieves relevant information from the documents and generates 
 
 Answers include available document source and page references.
 
+If the uploaded documents do not contain relevant information, the application handles insufficient-information cases instead of relying on unsupported answers.
+
 ### 9. Run Automated Tests
 
 Run all tests from the project root:
@@ -261,7 +317,7 @@ python -m pytest tests/ -v
 
 ## API Endpoints
 
-The FastAPI backend currently provides the following endpoints:
+The FastAPI backend provides the following endpoints:
 
 | Method | Endpoint | Purpose |
 |---|---|---|
@@ -276,11 +332,13 @@ The project currently contains 10 pytest test files covering the main components
 
 **Latest complete test results:**
 
-- Total test files: 10
-- Total test cases: 27
-- Passed: 27
-- Failed: 0
-- Execution time: 8.60 seconds
+| Metric | Result |
+|---|---:|
+| Test files | 10 |
+| Total test cases | 27 |
+| Passed | 27 |
+| Failed | 0 |
+| Execution time | 8.60 seconds |
 
 All 27 tests passed successfully in the latest complete test run.
 
@@ -297,7 +355,7 @@ Test coverage includes:
 - Precision@K and Recall@K evaluation.
 - Complete RAG pipeline and empty collection handling.
 
-**Note:** Some integration tests require Ollama and the locally available AI models. ChromaDB currently produces a dependency deprecation warning during testing; it does not cause test failures.
+**Note:** Some integration tests require Ollama and the locally available AI models. ChromaDB may produce a dependency deprecation warning during testing; it did not cause failures in the reported test run.
 
 ### Web Application Verification
 
@@ -309,11 +367,25 @@ The local web application was also tested manually.
 - Source and page references were displayed.
 - Insufficient-information handling was tested.
 - Light and Dark themes were tested.
+- Theme persistence after refresh was verified.
 - Responsive layout was checked on desktop and mobile views.
+- Browser favicon was verified.
+- Lighthouse scores:
+
+| Category | Score |
+|---|---:|
+| Performance | 100 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+Lighthouse scores reflect the tested local application at the time of verification.
 
 ## Project Status
 
-**Currently in Development**
+<kbd>Windows Version 1.0 – Completed</kbd>
+
+The first complete Windows version of RAGdocAI has been implemented and manually verified.
 
 ### Completed
 
@@ -346,16 +418,22 @@ The local web application was also tested manually.
 - [x] Light and Dark theme support.
 - [x] Responsive frontend styling.
 - [x] Automatic chat scrolling and bottom-positioned question input.
+- [x] Custom browser favicon.
+- [x] Separate UI documentation with screenshots.
 - [x] Manual functional testing of the local web application.
+- [x] Lighthouse verification.
 
-### Upcoming
+### Future Improvements
+
+These are optional ideas for future versions:
 
 - [ ] Improve document management.
 - [ ] Add chat history.
-- [ ] Support additional document formats.
+- [ ] Support additional document formats such as TXT and DOCX.
 - [ ] Improve retrieval quality and evaluation coverage.
-- [ ] Further improve application performance and accessibility.
-- [ ] Add custom browser favicon.
+- [ ] Further optimize application performance.
+- [ ] Explore macOS compatibility.
+- [ ] Add additional frontend features.
 
 ## Project Goals
 
@@ -372,31 +450,35 @@ The local web application was also tested manually.
 
 RAGdocAI is designed around local processing using Ollama and locally stored project data.
 
-No paid API keys are required for the core functionality.
+- No paid AI API keys are required for the core functionality.
+- Documents are processed locally.
+- Embeddings and the vector database are stored locally.
+- The application runs on the local computer.
+- Internet access may be needed initially to download Python packages and AI models.
 
-Documents, embeddings, and the vector database are stored locally on the computer. Internet access may be needed initially to download Python packages and AI models.
-
-## Future Improvements
-
-- Support for PDF, TXT, and DOCX documents.
-- Improved chunking strategies.
-- Further improvements to retrieval quality.
-- More comprehensive retrieval evaluation.
-- Document management.
-- Chat history.
-- Additional frontend improvements.
+The application is configured to bind to `127.0.0.1` by default, keeping the web interface accessible through the local computer.
 
 ## Learning Approach
 
-This project is being developed step by step, starting with the fundamentals of RAG before moving towards advanced techniques and web application development.
+This project was developed step by step, starting with the fundamentals of RAG before moving towards advanced retrieval techniques and web application development.
 
-The focus is on understanding the internal working of each component rather than simply using ready-made frameworks.
+The focus was on understanding the internal working of each component rather than simply using ready-made frameworks.
+
+## Project Information
+
+| Detail | Description |
+|---|---|
+| Project Name | RAGdocAI |
+| Tagline | Intelligent Document Retrieval & AI-Powered Answers |
+| Primary Language | Python |
+| Frontend | HTML, CSS, JavaScript |
+| Backend | FastAPI |
+| AI Runtime | Ollama |
+| Vector Database | ChromaDB |
+| Architecture | Local-first RAG |
+| Version | Windows 1.0 |
+| Status | Completed |
 
 ---
 
-**Project Name:** RAGdocAI  
-**Language:** Python, JavaScript  
-**Backend:** FastAPI  
-**Frontend:** HTML, CSS, JavaScript  
-**Approach:** Local-first RAG  
-**Status:** In Development
+**Built as an independent learning project to explore local AI, document retrieval, and Retrieval-Augmented Generation.**
