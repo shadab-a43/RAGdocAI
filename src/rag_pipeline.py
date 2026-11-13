@@ -12,32 +12,85 @@ COLLECTION_NAME = "ragdocai_collection_v2"
 DB_PATH = "data/chroma_db"
 
 
+# ========================================
+# 1. PDF CONTENT HASH
+# ========================================
+
+def calculate_file_hash(file_path):
+    """Generate a SHA-256 hash for a PDF file."""
+
+    sha256 = hashlib.sha256()
+
+    with open(file_path, "rb") as pdf_file:
+        for chunk in iter(lambda: pdf_file.read(8192), b""):
+            sha256.update(chunk)
+
+    return sha256.hexdigest()
+
+
+# ========================================
+# 2. DUPLICATE PDF CHECK
+# ========================================
+
+def is_duplicate_pdf(
+    file_hash,
+    collection_name=COLLECTION_NAME,
+    db_path=DB_PATH
+):
+    """Check whether a PDF with the same content already exists."""
+
+    client = chromadb.PersistentClient(path=db_path)
+
+    collection = client.get_or_create_collection(
+        name=collection_name
+    )
+
+    existing = collection.get(
+        where={"file_hash": file_hash},
+        include=["metadatas"]
+    )
+
+    return len(existing["ids"]) > 0
+
+
+# ========================================
+# 3. PDF PROCESSING
+# ========================================
+
 def process_pdf(file_path, chunk_size=200, overlap=30):
     """Load a PDF and create chunks with source metadata."""
 
-    # Step 1: Load page-wise PDF data
+    # Step 1: Generate PDF content hash
+    file_hash = calculate_file_hash(file_path)
+
+    # Step 2: Load page-wise PDF data
     pages = load_pdf_pages(file_path)
 
-    # Step 2: Split pages into metadata-aware chunks
+    # Step 3: Split pages into metadata-aware chunks
     chunks = split_pages(
         pages,
         chunk_size=chunk_size,
         overlap=overlap
     )
 
-    # Step 3: Create a stable document ID
+    # Step 4: Create a stable document ID
     file_path = str(Path(file_path).resolve())
 
     document_id = hashlib.sha256(
         file_path.encode("utf-8")
     ).hexdigest()[:16]
 
-    # Step 4: Attach document ID to every chunk
+    # Step 5: Attach metadata to every chunk
     for chunk in chunks:
         chunk["document_id"] = document_id
+        chunk["file_hash"] = file_hash
 
     return chunks
 
+
+# ========================================
+# 4. EMBEDDING GENERATION
+# ========================================
 
 def generate_embeddings(chunks, model="nomic-embed-text"):
     """Generate embeddings for text chunks."""
@@ -54,6 +107,10 @@ def generate_embeddings(chunks, model="nomic-embed-text"):
 
     return response["embeddings"]
 
+
+# ========================================
+# 5. STORE CHUNKS IN CHROMADB
+# ========================================
 
 def store_chunks(
     chunks,
@@ -76,12 +133,16 @@ def store_chunks(
         name=collection_name
     )
 
-    # Step 2: Get document ID
+    # Step 2: Get document ID and file hash
     document_id = chunks[0]["document_id"]
+    file_hash = chunks[0]["file_hash"]
 
     # Ensure all chunks belong to the same PDF
     if any(chunk["document_id"] != document_id for chunk in chunks):
         raise ValueError("All chunks must belong to the same PDF.")
+
+    if any(chunk["file_hash"] != file_hash for chunk in chunks):
+        raise ValueError("All chunks must have the same file hash.")
 
     # Step 3: Generate unique IDs
     ids = []
@@ -102,12 +163,13 @@ def store_chunks(
         {
             "source": chunk["source"],
             "page": chunk["page"],
-            "document_id": chunk["document_id"]
+            "document_id": chunk["document_id"],
+            "file_hash": chunk["file_hash"]
         }
         for chunk in chunks
     ]
 
-    # Step 6: Store or update new records
+    # Step 6: Store or update records
     collection.upsert(
         ids=ids,
         documents=[chunk["text"] for chunk in chunks],
@@ -115,7 +177,7 @@ def store_chunks(
         metadatas=metadatas
     )
 
-    # Step 7: Remove outdated chunks after successful upsert
+    # Step 7: Remove outdated chunks
     obsolete_ids = [
         chunk_id
         for chunk_id in existing["ids"]
@@ -127,6 +189,10 @@ def store_chunks(
 
     return len(ids)
 
+
+# ========================================
+# 6. COMPLETE PDF INGESTION
+# ========================================
 
 def ingest_pdf(file_path):
     """Process a PDF and store it in ChromaDB."""
@@ -142,6 +208,10 @@ def ingest_pdf(file_path):
 
     return total_stored
 
+
+# ========================================
+# 7. VECTOR RETRIEVAL
+# ========================================
 
 def retrieve_chunks(
     question,
@@ -202,6 +272,10 @@ def retrieve_chunks(
     return retrieved_chunks
 
 
+# ========================================
+# 8. ANSWER GENERATION
+# ========================================
+
 def generate_answer(
     question,
     context,
@@ -231,6 +305,10 @@ Question:
 
     return response["message"]["content"]
 
+
+# ========================================
+# 9. COMPLETE QUESTION ANSWERING
+# ========================================
 
 def ask_question(
     question,
