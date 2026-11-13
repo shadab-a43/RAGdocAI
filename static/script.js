@@ -34,11 +34,11 @@ function addMessage(message, type) {
     chatBox.appendChild(messageDiv);
 
     requestAnimationFrame(() => {
-    chatBox.scrollTo({
-        top: chatBox.scrollHeight,
-        behavior: "smooth"
+        chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: "smooth"
+        });
     });
-});
 
     return messageDiv;
 }
@@ -94,6 +94,18 @@ pdfUpload.addEventListener("change", async function () {
                 throw new Error(result.detail || "Upload failed.");
             }
 
+            // Handle duplicate PDF
+            if (result.duplicate) {
+
+                addMessage(
+                    `${result.filename}: ${result.message}`,
+                    "system-message"
+                );
+
+                continue;
+            }
+
+            // Handle successful upload
             successfulUploads.push(result.filename);
 
             uploadedFiles.push(result.filename);
@@ -111,17 +123,6 @@ pdfUpload.addEventListener("change", async function () {
             );
 
         }
-    }
-
-    if (successfulUploads.length > 0) {
-
-        const filenames = successfulUploads.join(", ");
-
-        addMessage(
-            `Your documents are ready!\n\nYou can now ask questions about: ${filenames}`,
-            "system-message"
-        );
-
     }
 
     pdfUpload.value = "";
