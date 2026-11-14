@@ -349,3 +349,98 @@ def ask_question(
     )
 
     return f"{answer}\n\nSources:\n{source_text}"
+
+
+
+# ========================================
+# 10. DOCUMENT MANAGER HELPERS
+# ========================================
+
+def find_duplicate_pdf(
+    file_hash,
+    collection_name=COLLECTION_NAME,
+    db_path=DB_PATH
+):
+    """Find the filename of an already uploaded PDF."""
+
+    client = chromadb.PersistentClient(path=db_path)
+
+    collection = client.get_or_create_collection(
+        name=collection_name
+    )
+
+    existing = collection.get(
+        where={"file_hash": file_hash},
+        include=["metadatas"]
+    )
+
+    if not existing["metadatas"]:
+        return None
+
+    return existing["metadatas"][0].get("source")
+
+
+def get_uploaded_documents(
+    collection_name=COLLECTION_NAME,
+    db_path=DB_PATH
+):
+    """Get uploaded PDFs grouped by document ID."""
+
+    client = chromadb.PersistentClient(path=db_path)
+
+    collection = client.get_or_create_collection(
+        name=collection_name
+    )
+
+    records = collection.get(
+        include=["metadatas"]
+    )
+
+    documents = {}
+
+    for metadata in records["metadatas"]:
+
+        document_id = metadata.get("document_id")
+        filename = metadata.get("source")
+
+        if not document_id or not filename:
+            continue
+
+        if document_id not in documents:
+            documents[document_id] = {
+                "document_id": document_id,
+                "filename": filename,
+                "total_chunks": 0
+            }
+
+        documents[document_id]["total_chunks"] += 1
+
+    return list(documents.values())
+
+
+def delete_document_chunks(
+    document_id,
+    collection_name=COLLECTION_NAME,
+    db_path=DB_PATH
+):
+    """Delete only the chunks belonging to one document."""
+
+    client = chromadb.PersistentClient(path=db_path)
+
+    collection = client.get_or_create_collection(
+        name=collection_name
+    )
+
+    existing = collection.get(
+        where={"document_id": document_id},
+        include=["metadatas"]
+    )
+
+    chunk_ids = existing["ids"]
+
+    if not chunk_ids:
+        return 0
+
+    collection.delete(ids=chunk_ids)
+
+    return len(chunk_ids)
