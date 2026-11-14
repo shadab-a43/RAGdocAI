@@ -1,5 +1,6 @@
 
 import hashlib
+import re
 from pathlib import Path
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -10,7 +11,9 @@ from pydantic import BaseModel
 from src.rag_pipeline import (
     ingest_pdf,
     ask_question,
-    is_duplicate_pdf
+    find_duplicate_pdf,
+    get_uploaded_documents,
+    delete_document_chunks
 )
 
 
@@ -20,7 +23,7 @@ from src.rag_pipeline import (
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DOCUMENTS_DIR = BASE_DIR / "documents"
+DOCUMENTS_DIR = (BASE_DIR / "documents").resolve()
 DOCUMENTS_DIR.mkdir(exist_ok=True)
 
 
@@ -84,25 +87,24 @@ async def upload_pdf(file: UploadFile = File(...)):
             detail="The uploaded PDF is empty."
         )
 
-    # Step 1: Generate content hash
     file_hash = hashlib.sha256(content).hexdigest()
 
-    # Step 2: Check for duplicate PDF
-    if is_duplicate_pdf(file_hash):
+    # Find the existing PDF with identical content
+    existing_filename = find_duplicate_pdf(file_hash)
 
+    if existing_filename:
         return {
             "uploaded": False,
             "duplicate": True,
             "message": "This PDF is already uploaded. Duplicate skipped.",
-            "filename": Path(file.filename).name
+            "filename": existing_filename
         }
 
-    # Step 3: Create a safe filename
     original_filename = Path(file.filename).name
 
     file_path = DOCUMENTS_DIR / original_filename
 
-    # Avoid overwriting a different PDF with the same filename
+    # Avoid overwriting a different PDF
     if file_path.exists():
 
         file_stem = Path(original_filename).stem
@@ -122,10 +124,8 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     try:
 
-        # Step 4: Save the new PDF
         file_path.write_bytes(content)
 
-        # Step 5: Process and store PDF chunks
         total_chunks = ingest_pdf(str(file_path))
 
         return {
@@ -137,7 +137,7 @@ async def upload_pdf(file: UploadFile = File(...)):
         }
 
     except Exception:
-        # Remove the saved file if processing fails
+
         if file_path.exists():
             file_path.unlink()
 
@@ -148,7 +148,108 @@ async def upload_pdf(file: UploadFile = File(...)):
 
 
 # ========================================
-# 6. QUESTION REQUEST MODEL
+# 6. GET UPLOADED DOCUMENTS
+# ========================================
+
+@app.get("/documents")
+def list_documents():
+
+    try:
+
+        documents = get_uploaded_documents()
+
+        return {
+            "total_documents": len(documents),
+            "documents": documents
+        }
+
+    except Exception:
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to retrieve uploaded documents."
+        )
+
+
+# ========================================
+# 7. DELETE A DOCUMENT
+# ========================================
+
+@app.delete("/documents/{document_id}")
+def delete_document(document_id: str):
+
+    # Validate document ID format
+    if not re.fullmatch(r"[0-9a-f]{16}", document_id):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid document ID."
+        )
+
+    try:
+
+        # Find the selected document
+        documents = get_uploaded_documents()
+
+        selected_document = next(
+            (
+                document
+                for document in documents
+                if document["document_id"] == document_id
+            ),
+            None
+        )
+
+        if selected_document is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Document not found."
+            )
+
+        filename = selected_document["filename"]
+
+        # Allow only a plain PDF filename
+        if Path(filename).name != filename or not filename.lower().endswith(".pdf"):
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid document filename."
+            )
+
+        file_path = (DOCUMENTS_DIR / filename).resolve()
+
+        # Confirm that the PDF belongs to documents folder
+        if file_path.parent != DOCUMENTS_DIR:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid document location."
+            )
+
+        # Delete only this document's ChromaDB chunks
+        deleted_chunks = delete_document_chunks(document_id)
+
+        # Delete the physical PDF if it exists
+        if file_path.exists():
+            file_path.unlink()
+
+        return {
+            "deleted": True,
+            "filename": filename,
+            "deleted_chunks": deleted_chunks,
+            "message": "Document and its stored chunks deleted successfully."
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+
+        raise HTTPException(
+            status_code=500,
+            detail="Document deletion failed. Please try again."
+        )
+
+
+# ========================================
+# 8. QUESTION REQUEST MODEL
 # ========================================
 
 class QuestionRequest(BaseModel):
@@ -156,7 +257,7 @@ class QuestionRequest(BaseModel):
 
 
 # ========================================
-# 7. ASK QUESTION
+# 9. ASK QUESTION
 # ========================================
 
 @app.post("/ask")
@@ -180,6 +281,7 @@ def ask_document(request: QuestionRequest):
         }
 
     except Exception:
+
         raise HTTPException(
             status_code=500,
             detail="Question processing failed. Please try again."
