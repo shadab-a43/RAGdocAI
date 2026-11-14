@@ -1,10 +1,10 @@
 # RAGdocAI
 
-**Intelligent Document Retrieval & AI-Powered Answers**
+### Intelligent Document Retrieval & AI-Powered Answers
 
 A beginner-friendly, local-first AI-powered document question-answering system built using **Retrieval-Augmented Generation (RAG)**.
 
-RAGdocAI is a local document question-answering application that allows users to upload PDF documents and ask questions about their content through a web-based interface.
+RAGdocAI allows users to upload PDF documents and ask questions about their content through a web-based interface.
 
 Instead of relying only on an AI model's general knowledge, RAGdocAI retrieves relevant information from uploaded documents and uses that context to generate answers with source references.
 
@@ -259,7 +259,7 @@ python -m pip install -r requirements.txt
 
 Install Ollama from its official website:
 
-https://ollama.com/
+[https://ollama.com/](https://ollama.com/)
 
 Download the required local models:
 
@@ -370,7 +370,8 @@ The local web application was also tested manually.
 - Theme persistence after refresh was verified.
 - Responsive layout was checked on desktop and mobile views.
 - Browser favicon was verified.
-- Lighthouse scores:
+
+**Lighthouse Scores:**
 
 | Category | Score |
 |---|---:|
@@ -383,7 +384,7 @@ Lighthouse scores reflect the tested local application at the time of verificati
 
 ## Project Status
 
-<kbd>Windows Version 1.0 – Completed</kbd>
+`Windows Version 1.0 – Completed`
 
 The first complete Windows version of RAGdocAI has been implemented and manually verified.
 
