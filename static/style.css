@@ -1,6 +1,7 @@
 
 /* ==========================================
-   RAGdocAI - CLEANED STYLESHEET
+   RAGdocAI - UPDATED STYLESHEET
+   Fixed Branding + Scrollable Sidebar
    Rich Pastel Light + Refined Dark Theme
 ========================================== */
 
@@ -36,7 +37,7 @@
 }
 
 
-/* Dark theme variables */
+/* Dark theme */
 
 body.dark-mode {
     color-scheme: dark;
@@ -90,7 +91,8 @@ input {
 
 .app-container {
     display: flex;
-    min-height: 100vh;
+    height: calc(100vh - 28px);
+    min-height: 0;
 }
 
 
@@ -102,6 +104,9 @@ input {
     width: 270px;
     min-width: 270px;
 
+    height: 100%;
+    min-height: 0;
+
     background: var(--sidebar);
     border-right: 1px solid var(--border);
 
@@ -109,8 +114,15 @@ input {
     flex-direction: column;
 
     padding: 25px 18px;
+
+    /* Prevent the complete sidebar from scrolling */
+    overflow: hidden;
+
     transition: background 0.3s ease;
 }
+
+
+/* Branding stays fixed at the top */
 
 .brand {
     display: flex;
@@ -119,6 +131,8 @@ input {
 
     padding: 5px 8px 27px;
     border-bottom: 1px solid var(--border);
+
+    flex: 0 0 auto;
 }
 
 .brand-icon {
@@ -149,16 +163,55 @@ input {
     color: var(--muted);
 }
 
+
+/* Only the middle section scrolls */
+
 .sidebar-content {
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+
     padding-top: 30px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }
 
+.sidebar-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+}
+
+
+/* Sidebar navigation */
+
 .sidebar-label {
+    flex-shrink: 0;
+
     font-size: 10px;
     letter-spacing: 1.5px;
     color: var(--muted);
     font-weight: 700;
+
     margin: 0 10px 13px;
 }
 
@@ -172,6 +225,8 @@ input {
 
     font-size: 14px;
     color: var(--muted);
+
+    flex-shrink: 0;
 }
 
 .sidebar-item.active {
@@ -190,6 +245,8 @@ input {
 ========================================== */
 
 .upload-card {
+    flex-shrink: 0;
+
     background: var(--surface-soft);
     border: 1.5px dashed var(--purple);
     border-radius: 24px;
@@ -273,10 +330,14 @@ input {
     gap: 9px;
 
     padding: 16px 8px 0;
+    margin-top: 12px;
+
     border-top: 1px solid var(--border);
 
     color: var(--muted);
     font-size: 12px;
+
+    flex: 0 0 auto;
 }
 
 .status-dot {
@@ -287,6 +348,8 @@ input {
     border-radius: 50%;
 
     display: inline-block;
+    flex-shrink: 0;
+
     box-shadow: 0 0 8px rgba(53, 184, 121, 0.35);
 }
 
@@ -299,7 +362,7 @@ input {
     flex: 1;
     min-width: 0;
 
-    height: calc(100vh - 28px);
+    height: 100%;
     min-height: 0;
 
     display: flex;
@@ -671,7 +734,6 @@ input {
 
 /* ==========================================
    11. LIGHT THEME
-   Rich Pastel Appearance
 ========================================== */
 
 body:not(.dark-mode) {
@@ -687,7 +749,8 @@ body:not(.dark-mode) {
 
 body:not(.dark-mode) .app-container {
     gap: 14px;
-    min-height: calc(100vh - 28px);
+    height: calc(100vh - 28px);
+    min-height: 0;
 }
 
 body:not(.dark-mode) .sidebar {
@@ -924,7 +987,6 @@ body:not(.dark-mode) .theme-toggle {
 
 /* ==========================================
    12. DARK THEME
-   Rounded Layout + Purple Glow
 ========================================== */
 
 body.dark-mode {
@@ -940,7 +1002,8 @@ body.dark-mode {
 
 body.dark-mode .app-container {
     gap: 14px;
-    min-height: calc(100vh - 28px);
+    height: calc(100vh - 28px);
+    min-height: 0;
 }
 
 body.dark-mode .sidebar {
@@ -1198,7 +1261,222 @@ body.dark-mode .question-area {
 
 
 /* ==========================================
-   14. RESPONSIVE DESIGN
+   14. UPLOADED DOCUMENTS MANAGER
+========================================== */
+
+.uploaded-documents {
+    margin-top: 25px;
+    padding: 15px 12px;
+
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    /* Documents are part of middle sidebar scroll */
+    flex: 0 0 auto;
+    min-height: auto;
+    overflow: visible;
+}
+
+.documents-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+
+.documents-header h3 {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.document-count {
+    min-width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 7px;
+
+    background: var(--purple-soft);
+    color: var(--purple-dark);
+
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+#uploaded-documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    flex: 0 0 auto;
+    min-height: 0;
+
+    /* No independent scrolling here */
+    max-height: none;
+    overflow: visible;
+
+    padding: 0 3px 0 0;
+}
+
+.documents-empty {
+    padding: 16px 8px;
+
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.document-card {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 11px 9px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    flex-shrink: 0;
+
+    transition: 0.2s ease;
+}
+
+.document-card:hover {
+    border-color: var(--purple);
+    transform: translateY(-1px);
+}
+
+.document-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--purple-soft);
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.document-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.document-name {
+    display: block;
+    overflow-wrap: anywhere;
+
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.document-chunks {
+    display: block;
+    margin-top: 4px;
+
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.delete-document-btn {
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--surface-soft);
+    color: #d66b78;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.delete-document-btn:hover {
+    background: #fde8eb;
+    border-color: #e8a5ad;
+    color: #bd3548;
+}
+
+.delete-document-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* Light documents manager */
+
+body:not(.dark-mode) .uploaded-documents {
+    background: linear-gradient(
+        145deg,
+        #E5D3ED,
+        #DCCBEA
+    );
+
+    border-color: #c9b6df;
+
+    box-shadow: 0 8px 20px rgba(85, 65, 140, 0.10);
+}
+
+body:not(.dark-mode) .document-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: #e5d9f0;
+}
+
+
+/* Dark documents manager */
+
+body.dark-mode .uploaded-documents {
+    background: linear-gradient(
+        145deg,
+        #302a42,
+        #29263a
+    );
+
+    border-color: #48405e;
+}
+
+body.dark-mode .document-card {
+    background: #292638;
+    border-color: #48405e;
+}
+
+body.dark-mode .delete-document-btn:hover {
+    background: #49303d;
+    border-color: #80505e;
+    color: #ff9ba8;
+}
+
+
+/* ==========================================
+   15. RESPONSIVE DESIGN
 ========================================== */
 
 @media (max-width: 800px) {
@@ -1223,12 +1501,22 @@ body.dark-mode .question-area {
 
     .app-container {
         flex-direction: column;
+
+        height: auto;
+        min-height: 0;
     }
 
     .sidebar {
         width: 100%;
         min-width: 0;
+
+        height: auto;
+        min-height: 0;
+
         padding: 15px;
+
+        /* Mobile uses normal page scrolling */
+        overflow: visible;
     }
 
     .brand {
@@ -1236,7 +1524,12 @@ body.dark-mode .question-area {
     }
 
     .sidebar-content {
+        flex: 0 0 auto;
+        min-height: auto;
+
         padding-top: 15px;
+
+        overflow: visible;
     }
 
     .sidebar-item,
@@ -1300,7 +1593,9 @@ body.dark-mode .question-area {
     body:not(.dark-mode) .app-container,
     body.dark-mode .app-container {
         gap: 8px;
-        min-height: calc(100vh - 16px);
+
+        height: auto;
+        min-height: 0;
     }
 
     body:not(.dark-mode) .sidebar,
@@ -1308,6 +1603,18 @@ body.dark-mode .question-area {
     body.dark-mode .sidebar,
     body.dark-mode .main-content {
         border-radius: 23px;
+    }
+
+    .uploaded-documents {
+        flex: none;
+        margin-top: 15px;
+        padding: 12px;
+        min-height: 0;
+    }
+
+    #uploaded-documents-list {
+        max-height: none;
+        flex: none;
     }
 
 }
