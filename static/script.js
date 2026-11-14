@@ -14,9 +14,8 @@ const sendBtn = document.getElementById("send-btn");
 const chatBox = document.getElementById("chat-box");
 const themeToggle = document.getElementById("theme-toggle");
 
-
-// Store uploaded document names
-let uploadedFiles = [];
+const documentCount = document.getElementById("document-count");
+const documentsList = document.getElementById("uploaded-documents-list");
 
 
 // ========================================
@@ -45,7 +44,192 @@ function addMessage(message, type) {
 
 
 // ========================================
-// 3. PDF UPLOAD
+// 3. DOCUMENT MANAGER
+// ========================================
+
+// Fetch and display uploaded PDFs
+
+async function fetchDocuments() {
+
+    try {
+
+        const response = await fetch("/documents");
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail || "Unable to load documents."
+            );
+        }
+
+        renderDocuments(result.documents);
+
+        documentCount.textContent = result.total_documents;
+
+    } catch (error) {
+
+        documentsList.textContent = "Unable to load documents.";
+
+        documentCount.textContent = "0";
+
+        addMessage(
+            `Document list error: ${error.message}`,
+            "system-message"
+        );
+
+    }
+
+}
+
+
+// Display document cards
+
+function renderDocuments(documents) {
+
+    documentsList.innerHTML = "";
+
+    if (!documents || documents.length === 0) {
+
+        const emptyMessage = document.createElement("div");
+
+        emptyMessage.className = "documents-empty";
+
+        emptyMessage.textContent = "No documents uploaded yet.";
+
+        documentsList.appendChild(emptyMessage);
+
+        return;
+    }
+
+    documents.forEach(function (doc) {
+
+        const card = document.createElement("div");
+
+        card.className = "document-card";
+
+        // PDF icon
+
+        const icon = document.createElement("div");
+
+        icon.className = "document-icon";
+
+        icon.textContent = "📄";
+
+        // Document information
+
+        const info = document.createElement("div");
+
+        info.className = "document-info";
+
+        const name = document.createElement("span");
+
+        name.className = "document-name";
+
+        name.textContent = doc.filename;
+
+        const chunks = document.createElement("span");
+
+        chunks.className = "document-chunks";
+
+        chunks.textContent = `${doc.total_chunks} chunks`;
+
+        info.appendChild(name);
+
+        info.appendChild(chunks);
+
+        // Delete button
+
+        const deleteButton = document.createElement("button");
+
+        deleteButton.className = "delete-document-btn";
+
+        deleteButton.textContent = "🗑";
+
+        deleteButton.title = "Delete this PDF";
+
+        deleteButton.setAttribute(
+            "aria-label",
+            `Delete ${doc.filename}`
+        );
+
+        deleteButton.addEventListener("click", function () {
+
+            deleteDocument(doc, deleteButton);
+
+        });
+
+        card.appendChild(icon);
+
+        card.appendChild(info);
+
+        card.appendChild(deleteButton);
+
+        documentsList.appendChild(card);
+
+    });
+
+}
+
+
+// ========================================
+// 4. DELETE SELECTED DOCUMENT
+// ========================================
+
+async function deleteDocument(doc, deleteButton) {
+
+    const confirmed = window.confirm(
+        `Are you sure you want to permanently delete "${doc.filename}"?\n\nThis will remove the PDF and all its stored chunks.`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    deleteButton.disabled = true;
+
+    try {
+
+        const response = await fetch(
+            `/documents/${encodeURIComponent(doc.document_id)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail || "Document deletion failed."
+            );
+        }
+
+        addMessage(
+            `Deleted: ${result.filename}\nChunks removed: ${result.deleted_chunks}`,
+            "system-message"
+        );
+
+        // Refresh document list and count
+
+        await fetchDocuments();
+
+    } catch (error) {
+
+        addMessage(
+            `Delete failed: ${error.message}`,
+            "system-message"
+        );
+
+        deleteButton.disabled = false;
+
+    }
+
+}
+
+
+// ========================================
+// 5. PDF UPLOAD
 // ========================================
 
 pdfUpload.addEventListener("change", async function () {
@@ -58,7 +242,9 @@ pdfUpload.addEventListener("change", async function () {
 
     pdfUpload.disabled = true;
 
-    let successfulUploads = [];
+    // Store successfully uploaded or already available documents
+
+    const readyDocuments = [];
 
     for (const file of files) {
 
@@ -91,29 +277,28 @@ pdfUpload.addEventListener("change", async function () {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.detail || "Upload failed.");
+                throw new Error(
+                    result.detail || "Upload failed."
+                );
             }
 
             // Handle duplicate PDF
+
             if (result.duplicate) {
 
                 addMessage(
-                    `${result.filename}: ${result.message}`,
+                    `Duplicate detected! Already uploaded as: ${result.filename}\n${result.message}`,
                     "system-message"
                 );
+
+                readyDocuments.push(result.filename);
 
                 continue;
             }
 
-            // Handle successful upload
-            successfulUploads.push(result.filename);
+            // Store successful upload filename
 
-            uploadedFiles.push(result.filename);
-
-            addMessage(
-                `Successfully processed: ${result.filename}\nChunks stored: ${result.total_chunks}`,
-                "system-message"
-            );
+            readyDocuments.push(result.filename);
 
         } catch (error) {
 
@@ -123,6 +308,22 @@ pdfUpload.addEventListener("change", async function () {
             );
 
         }
+
+    }
+
+    // Show one final confirmation after all uploads
+
+    if (readyDocuments.length > 0) {
+
+        addMessage(
+            `Your documents are ready!\n\nYou can now ask questions about: ${readyDocuments.join(", ")}`,
+            "system-message"
+        );
+
+        // Refresh document manager only once
+
+        await fetchDocuments();
+
     }
 
     pdfUpload.value = "";
@@ -133,7 +334,7 @@ pdfUpload.addEventListener("change", async function () {
 
 
 // ========================================
-// 4. ASK AI QUESTION
+// 6. ASK AI QUESTION
 // ========================================
 
 async function askQuestion() {
@@ -174,7 +375,9 @@ async function askQuestion() {
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.detail || "Question processing failed.");
+            throw new Error(
+                result.detail || "Question processing failed."
+            );
         }
 
         loadingMessage.remove();
@@ -192,6 +395,7 @@ async function askQuestion() {
         answerDiv.appendChild(answerText);
 
         // Display document sources
+
         if (answerParts.length > 1) {
 
             const sourceDiv = document.createElement("div");
@@ -238,14 +442,14 @@ async function askQuestion() {
 
 
 // ========================================
-// 5. SEND BUTTON
+// 7. SEND BUTTON
 // ========================================
 
 sendBtn.addEventListener("click", askQuestion);
 
 
 // ========================================
-// 6. ENTER KEY TO SEND QUESTION
+// 8. ENTER KEY TO SEND QUESTION
 // ========================================
 
 questionInput.addEventListener("keydown", function (event) {
@@ -258,7 +462,7 @@ questionInput.addEventListener("keydown", function (event) {
 
 
 // ========================================
-// 7. CLICKABLE SUGGESTIONS
+// 9. CLICKABLE SUGGESTIONS
 // ========================================
 
 document.querySelectorAll(".suggestion").forEach(function (suggestion) {
@@ -275,7 +479,7 @@ document.querySelectorAll(".suggestion").forEach(function (suggestion) {
 
 
 // ========================================
-// 8. LIGHT / DARK THEME
+// 10. LIGHT / DARK THEME
 // ========================================
 
 const savedTheme = localStorage.getItem("ragdocai-theme");
@@ -323,7 +527,18 @@ themeToggle.addEventListener("click", function () {
 updateThemeIcon();
 
 
-// Automatically focus question input when page loads
+// ========================================
+// 11. INITIALIZE APPLICATION
+// ========================================
+
 window.addEventListener("load", function () {
+
+    // Load uploaded PDFs
+
+    fetchDocuments();
+
+    // Focus question input
+
     questionInput.focus();
+
 });
