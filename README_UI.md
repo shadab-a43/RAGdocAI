@@ -20,6 +20,14 @@ RAGdocAI also supports dark mode for a comfortable viewing experience. Your sele
 
 ![RAGdocAI Dark Mode](screenshots/03-dark-mode.png)
 
+## 4. Delete Uploaded PDF Documents
+
+RAGdocAI provides an option to delete uploaded PDF documents directly from the web interface.
+
+Users can click the delete option next to an uploaded document to remove it from the application.
+
+![Delete Uploaded PDF](screenshots/04-delete-document.png)
+
 ---
 
 **RAGdocAI** – Intelligent Document Retrieval & AI-Powered Answers.
