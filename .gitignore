@@ -12,6 +12,9 @@ __pycache__/
 # Local database and vector storage
 data/
 
+# Locally uploaded PDF documents
+documents/*.pdf
+
 # Private project context
 PROJECT_CONTEXT.md
 
